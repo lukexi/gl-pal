@@ -14,6 +14,6 @@ geometryFromShape Shape{..} = do
   uvs         <- bufferData         uvList
   indices     <- bufferElementData  indexList
   
-  let vertCount = traceShowId $ numVerts
+  let vertCount = numVerts
 
   return Geometry{..}

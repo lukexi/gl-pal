@@ -20,8 +20,8 @@ planeShape size normal up subdivisions = Shape{..}
 
   where
 
-    numVerts      = traceShowId $ 3 * 2 * ( fI subdivisionsX  ) * ( fI subdivisionsY )
-    numPoints     = traceShowId $ ( fI subdivisionsX + 1 ) * ( fI subdivisionsY + 1 )
+    numVerts      = 3 * 2 * ( fI subdivisionsX  ) * ( fI subdivisionsY )
+    numPoints     = ( fI subdivisionsX + 1 ) * ( fI subdivisionsY + 1 )
 
     subdivisionsX = subdivisions ^. _x 
     subdivisionsY = subdivisions ^. _y 
