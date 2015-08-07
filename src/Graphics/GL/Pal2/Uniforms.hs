@@ -36,7 +36,7 @@ fillArgs = do
         prog <- ask
         uniformLoc <- getShaderUniform prog x
         
-        liftIO . putStrLn $ "Got loc: " ++ show uniformLoc
+        -- liftIO . putStrLn $ "Got loc: " ++ show uniformLoc
         -- Would like to get rid of this unsafeCoerce if possible!
         -- But I couldn't get fromConstrM to accept
         -- non-concrete instances of UniformLocation a,
