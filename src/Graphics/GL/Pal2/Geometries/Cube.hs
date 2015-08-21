@@ -56,26 +56,26 @@ cubeShape size subdivisions =
 
 -- Cool type signature holmes
 makeCubePoints :: (V3 GLfloat,
-                         V3 GLfloat,
-                         V3 GLfloat,
-                         V3 GLfloat,
-                         V3 GLfloat,
-                         V3 GLfloat)
-                        -> (V3 GLfloat,
-                            V3 GLfloat,
-                            V3 GLfloat,
-                            V3 GLfloat,
-                            V3 GLfloat,
-                            V3 GLfloat)
-                        -> (V2 GLfloat,
-                            V2 GLfloat,
-                            V2 GLfloat,
-                            V2 GLfloat,
-                            V2 GLfloat,
-                            V2 GLfloat)
-                        -> (V2 Int, V2 Int, V2 Int, V2 Int, V2 Int, V2 Int)
-                        -> V3 GLfloat
-                        -> Shape
+                   V3 GLfloat,
+                   V3 GLfloat,
+                   V3 GLfloat,
+                   V3 GLfloat,
+                   V3 GLfloat)
+               -> (V3 GLfloat,
+                   V3 GLfloat,
+                   V3 GLfloat,
+                   V3 GLfloat,
+                   V3 GLfloat,
+                   V3 GLfloat)
+               -> (V2 GLfloat,
+                   V2 GLfloat,
+                   V2 GLfloat,
+                   V2 GLfloat,
+                   V2 GLfloat,
+                   V2 GLfloat)
+               -> (V2 Int, V2 Int, V2 Int, V2 Int, V2 Int, V2 Int)
+               -> V3 GLfloat
+               -> Shape
 makeCubePoints (n1,n2,n3,n4,n5,n6) (u1,u2,u3,u4,u5,u6) (s1,s2,s3,s4,s5,s6) (d1,d2,d3,d4,d5,d6) size = finalShape
   where 
 
@@ -85,13 +85,15 @@ makeCubePoints (n1,n2,n3,n4,n5,n6) (u1,u2,u3,u4,u5,u6) (s1,s2,s3,s4,s5,s6) (d1,d
     plane4 = planeShape s4 n4 u4 d4
     plane5 = planeShape s5 n5 u5 d5
     plane6 = planeShape s6 n6 u6 d6
+    planes = [plane1, plane2, plane3, plane4, plane5, plane6]
+    planeNumPoints = map numPoints planes
 
-    f1 = updatePlanePos plane1 n1 (numPoints plane1 ) 0
-    f2 = updatePlanePos plane2 n2 (numPoints plane2 ) (  numPoints plane1 )
-    f3 = updatePlanePos plane3 n3 (numPoints plane3 ) (( numPoints plane1 ) + ( numPoints plane2 ))
-    f4 = updatePlanePos plane4 n4 (numPoints plane4 ) (( numPoints plane1 ) + ( numPoints plane2 ) + ( numPoints plane3 ))
-    f5 = updatePlanePos plane5 n5 (numPoints plane5 ) (( numPoints plane1 ) + ( numPoints plane2 ) + ( numPoints plane3 )+ ( numPoints plane4 ))
-    f6 = updatePlanePos plane6 n6 (numPoints plane6 ) (( numPoints plane1 ) + ( numPoints plane2 ) + ( numPoints plane3 )+ ( numPoints plane4 )+ ( numPoints plane5 ))
+    f1 = updatePlanePos plane1 n1 (numPoints plane1) (sum . take 0 $ planeNumPoints)
+    f2 = updatePlanePos plane2 n2 (numPoints plane2) (sum . take 1 $ planeNumPoints)
+    f3 = updatePlanePos plane3 n3 (numPoints plane3) (sum . take 2 $ planeNumPoints)
+    f4 = updatePlanePos plane4 n4 (numPoints plane4) (sum . take 3 $ planeNumPoints)
+    f5 = updatePlanePos plane5 n5 (numPoints plane5) (sum . take 4 $ planeNumPoints)
+    f6 = updatePlanePos plane6 n6 (numPoints plane6) (sum . take 5 $ planeNumPoints)
     fs = [f1,f2,f3,f4,f5,f6]
 
     finalShape = Shape 

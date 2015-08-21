@@ -15,5 +15,8 @@ import Graphics.GL.Pal2.Entity           as Exports
 import Graphics.GL.Pal2.Geometries.Cube  as Exports
 import Graphics.GL.Pal2.Geometries.Plane as Exports
 
+import Linear.Extra                      as Exports
+import Data.Colour.Extra                 as Exports
+
 import Data.Bits ((.|.))
 import Foreign   (nullPtr)

@@ -2,5 +2,5 @@ flags: {}
 packages:
 - '.'
 extra-deps: []
-resolver: nightly-2015-08-07
+resolver: lts-3.0
 arch: x86_64
