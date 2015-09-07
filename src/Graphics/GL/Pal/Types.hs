@@ -6,6 +6,7 @@ import Graphics.GL
 import Control.Monad.Trans
 import Foreign
 import Data.Data
+import Debug.Trace
 
 -- | For texture data
 data ColorSpace = SRGB | Linear
@@ -35,7 +36,7 @@ data Geometry = Geometry
   , vertCount     :: !GLsizei
   }
 
-data Shape = Shape
+data GeometryData = GeometryData
   { positionList  :: ![ GLfloat ]
   , normalList    :: ![ GLfloat ]
   , tangentList   :: ![ GLfloat ]
@@ -45,14 +46,18 @@ data Shape = Shape
   , numPoints     :: !GLuint
   }
 
-data Entity u = Entity
-  { program   :: !Program
-  , uniforms  :: !u
-  , geometry  :: !Geometry
-  , vAO       :: !VertexArrayObject
+data Shape u = Shape
+  { sProgram   :: !Program
+  , sUniforms  :: !u
+  , sGeometry  :: !Geometry
+  , sVAO       :: !VertexArrayObject
   }
 
 
 -- | Utility for extracting a value from a pointer-taking function
 overPtr :: (MonadIO m, Storable a) => (Ptr a -> IO b) -> m a
 overPtr f = liftIO (alloca (\p -> f p >> peek p))
+
+
+traceL :: Show a => String -> a -> a
+traceL label value = trace (label ++ ": " ++ show value) value

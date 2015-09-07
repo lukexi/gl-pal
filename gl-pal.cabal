@@ -21,10 +21,11 @@ library
     Graphics.GL.Pal
     Graphics.GL.Pal.ArrayBuffer
     Graphics.GL.Pal.AssignAttribute
-    Graphics.GL.Pal.Entity
+    Graphics.GL.Pal.Shape
     Graphics.GL.Pal.Geometries.Cube
     Graphics.GL.Pal.Geometries.Plane
     Graphics.GL.Pal.Geometry
+    Graphics.GL.Pal.InferUniforms
     Graphics.GL.Pal.Shader
     Graphics.GL.Pal.Texture
     Graphics.GL.Pal.Types

@@ -3,10 +3,8 @@ module Graphics.GL.Pal.Geometry where
 import Graphics.GL.Pal.Types
 import Graphics.GL.Pal.ArrayBuffer
 
-import Debug.Trace
-
-geometryFromShape :: Shape -> IO Geometry
-geometryFromShape Shape{..} = do
+geometryFromData :: GeometryData -> IO Geometry
+geometryFromData GeometryData{..} = do
 
   positions   <- bufferData         positionList
   normals     <- bufferData         normalList

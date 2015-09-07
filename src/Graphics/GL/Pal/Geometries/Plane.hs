@@ -10,13 +10,13 @@ import Graphics.GL.Pal.Geometry
 import Linear       hiding ( trace   )
 import Control.Lens hiding ( indices )
 import Data.Foldable
-import Debug.Trace
+-- import Debug.Trace
 
 fI :: ( Integral a , Num b ) => a -> b
 fI = fromIntegral
 
-planeShape :: V2 GLfloat -> V3 GLfloat -> V3 GLfloat -> V2 Int -> Shape
-planeShape size normal up subdivisions = Shape{..}
+planeData :: V2 GLfloat -> V3 GLfloat -> V3 GLfloat -> V2 Int -> GeometryData
+planeData size normal up subdivisions = GeometryData{..}
 
   where
 
@@ -49,7 +49,7 @@ planeShape size normal up subdivisions = Shape{..}
 
 
 planeGeometry :: V2 GLfloat -> V3 GLfloat -> V3 GLfloat -> V2 Int -> IO Geometry
-planeGeometry size normal up subdivisions = geometryFromShape $ planeShape size normal up subdivisions 
+planeGeometry size normal up subdivisions = geometryFromData $ planeData size normal up subdivisions 
 
 
 makePlanePositions :: GLfloat -> GLfloat -> V3 GLfloat -> V3 GLfloat -> Int -> Int -> [ GLfloat ]

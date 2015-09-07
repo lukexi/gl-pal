@@ -11,10 +11,10 @@ import Graphics.GL.Pal.Geometries.Plane
 import Linear       hiding ( trace   )
 import Control.Lens hiding ( indices )
 import Data.Foldable
-import Debug.Trace
 
-cubeShape :: V3 GLfloat -> V3 Int -> Shape
-cubeShape size subdivisions =
+
+cubeData :: V3 GLfloat -> V3 Int -> GeometryData
+cubeData size subdivisions =
 
   let n1 = V3 0 0 1 
       u1 = V3 0 1 0
@@ -75,16 +75,16 @@ makeCubePoints :: (V3 GLfloat,
                    V2 GLfloat)
                -> (V2 Int, V2 Int, V2 Int, V2 Int, V2 Int, V2 Int)
                -> V3 GLfloat
-               -> Shape
-makeCubePoints (n1,n2,n3,n4,n5,n6) (u1,u2,u3,u4,u5,u6) (s1,s2,s3,s4,s5,s6) (d1,d2,d3,d4,d5,d6) size = finalShape
+               -> GeometryData
+makeCubePoints (n1,n2,n3,n4,n5,n6) (u1,u2,u3,u4,u5,u6) (s1,s2,s3,s4,s5,s6) (d1,d2,d3,d4,d5,d6) size = finalData
   where 
 
-    plane1 = planeShape s1 n1 u1 d1
-    plane2 = planeShape s2 n2 u2 d2
-    plane3 = planeShape s3 n3 u3 d3
-    plane4 = planeShape s4 n4 u4 d4
-    plane5 = planeShape s5 n5 u5 d5
-    plane6 = planeShape s6 n6 u6 d6
+    plane1 = planeData s1 n1 u1 d1
+    plane2 = planeData s2 n2 u2 d2
+    plane3 = planeData s3 n3 u3 d3
+    plane4 = planeData s4 n4 u4 d4
+    plane5 = planeData s5 n5 u5 d5
+    plane6 = planeData s6 n6 u6 d6
     planes = [plane1, plane2, plane3, plane4, plane5, plane6]
     planeNumPoints = map numPoints planes
 
@@ -96,7 +96,7 @@ makeCubePoints (n1,n2,n3,n4,n5,n6) (u1,u2,u3,u4,u5,u6) (s1,s2,s3,s4,s5,s6) (d1,d
     f6 = updatePlanePos plane6 n6 (numPoints plane6) (sum . take 5 $ planeNumPoints)
     fs = [f1,f2,f3,f4,f5,f6]
 
-    finalShape = Shape 
+    finalData = GeometryData 
       { positionList = concatMap positionList fs
       , indexList    = concatMap indexList fs
       , uvList       = concatMap uvList fs
@@ -106,7 +106,7 @@ makeCubePoints (n1,n2,n3,n4,n5,n6) (u1,u2,u3,u4,u5,u6) (s1,s2,s3,s4,s5,s6) (d1,d
       , numPoints    = sum $ map numPoints fs
       } 
 
-    updatePlanePos :: Shape -> V3 GLfloat -> GLuint -> GLuint -> Shape
+    updatePlanePos :: GeometryData -> V3 GLfloat -> GLuint -> GLuint -> GeometryData
     updatePlanePos plane normal nPoints startIndex = plane { positionList = fPos, indexList = fIndex }
       where
         pos    = positionList plane
@@ -115,8 +115,7 @@ makeCubePoints (n1,n2,n3,n4,n5,n6) (u1,u2,u3,u4,u5,u6) (s1,s2,s3,s4,s5,s6) (d1,d
         newI   = startIndex + 0
         fIndex = map ( + newI ) ( indexList plane )
 
-traceL :: Show a => String -> a -> a
-traceL label value = trace (label ++ ": " ++ show value) value
+
       
 cubeGeometry :: V3 GLfloat -> V3 Int -> IO Geometry   
-cubeGeometry size subdivisions = geometryFromShape $ cubeShape size subdivisions 
+cubeGeometry size subdivisions = geometryFromData $ cubeData size subdivisions 
