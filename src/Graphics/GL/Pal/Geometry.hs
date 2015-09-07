@@ -1,7 +1,7 @@
 {-# LANGUAGE RecordWildCards #-}
-module Graphics.GL.Pal2.Geometry where 
-import Graphics.GL.Pal2.Types
-import Graphics.GL.Pal2.ArrayBuffer
+module Graphics.GL.Pal.Geometry where 
+import Graphics.GL.Pal.Types
+import Graphics.GL.Pal.ArrayBuffer
 
 import Debug.Trace
 

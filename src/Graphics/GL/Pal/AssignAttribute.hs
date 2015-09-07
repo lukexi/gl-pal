@@ -1,9 +1,9 @@
-module Graphics.GL.Pal2.AssignAttribute where
+module Graphics.GL.Pal.AssignAttribute where
 
 import Foreign
 import Graphics.GL
-import Graphics.GL.Pal2.Types
-import Graphics.GL.Pal2.Shader
+import Graphics.GL.Pal.Types
+import Graphics.GL.Pal.Shader
 
 assignAttribute :: Program -> String -> GLint -> IO ()
 assignAttribute prog attributeName attributeLength = do

@@ -5,11 +5,11 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE FlexibleContexts #-}
 
-module Graphics.GL.Pal2.Uniforms where
+module Graphics.GL.Pal.Uniforms where
 import Graphics.GL
 
-import Graphics.GL.Pal2.Types
-import Graphics.GL.Pal2.Shader
+import Graphics.GL.Pal.Types
+import Graphics.GL.Pal.Shader
 
 import Control.Monad.Trans
 import Foreign

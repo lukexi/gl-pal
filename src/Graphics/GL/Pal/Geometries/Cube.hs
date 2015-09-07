@@ -1,12 +1,12 @@
 {-# LANGUAGE RecordWildCards #-}
 
-module Graphics.GL.Pal2.Geometries.Cube where
+module Graphics.GL.Pal.Geometries.Cube where
 
 import Graphics.GL
 
-import Graphics.GL.Pal2.Types
-import Graphics.GL.Pal2.Geometry
-import Graphics.GL.Pal2.Geometries.Plane
+import Graphics.GL.Pal.Types
+import Graphics.GL.Pal.Geometry
+import Graphics.GL.Pal.Geometries.Plane
 
 import Linear       hiding ( trace   )
 import Control.Lens hiding ( indices )

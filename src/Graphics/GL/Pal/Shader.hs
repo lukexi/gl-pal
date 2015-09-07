@@ -1,6 +1,6 @@
-module Graphics.GL.Pal2.Shader where
+module Graphics.GL.Pal.Shader where
 
-import Graphics.GL.Pal2.Types
+import Graphics.GL.Pal.Types
 
 import Graphics.GL
 

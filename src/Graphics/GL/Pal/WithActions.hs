@@ -1,9 +1,9 @@
-module Graphics.GL.Pal2.WithActions where
+module Graphics.GL.Pal.WithActions where
 
 import Graphics.GL
 import Control.Monad.Trans
 
-import Graphics.GL.Pal2.Types
+import Graphics.GL.Pal.Types
 
 withVAO :: MonadIO m => VertexArrayObject -> m a -> m ()
 withVAO aVAO action = do

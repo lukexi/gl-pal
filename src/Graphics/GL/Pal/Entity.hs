@@ -1,13 +1,13 @@
 {-# LANGUAGE RecordWildCards #-}
 
-module Graphics.GL.Pal2.Entity where
+module Graphics.GL.Pal.Entity where
   
 import Graphics.GL
 
-import Graphics.GL.Pal2.Types
-import Graphics.GL.Pal2.Uniforms
-import Graphics.GL.Pal2.WithActions
-import Graphics.GL.Pal2.AssignAttribute
+import Graphics.GL.Pal.Types
+import Graphics.GL.Pal.Uniforms
+import Graphics.GL.Pal.WithActions
+import Graphics.GL.Pal.AssignAttribute
 import Data.Data
 
 entity :: (Data u) => Geometry -> Program -> IO (Entity u)

@@ -1,9 +1,9 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE LambdaCase      #-}
 
-module Graphics.GL.Pal2.Texture where
+module Graphics.GL.Pal.Texture where
 
-import Graphics.GL.Pal2.Types
+import Graphics.GL.Pal.Types
 
 import Control.Monad (when)
 import Foreign.Ptr

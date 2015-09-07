@@ -1,6 +1,6 @@
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
-module Graphics.GL.Pal2.Types where
+module Graphics.GL.Pal.Types where
 
 import Graphics.GL
 import Control.Monad.Trans

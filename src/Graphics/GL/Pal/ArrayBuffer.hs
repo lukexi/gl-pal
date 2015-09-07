@@ -1,10 +1,10 @@
-module Graphics.GL.Pal2.ArrayBuffer where
+module Graphics.GL.Pal.ArrayBuffer where
 
 import Foreign
 import Graphics.GL
 
-import Graphics.GL.Pal2.Types
-import Graphics.GL.Pal2.WithActions
+import Graphics.GL.Pal.Types
+import Graphics.GL.Pal.WithActions
 
 bufferData :: [GLfloat] -> IO ArrayBuffer
 bufferData values  = do
