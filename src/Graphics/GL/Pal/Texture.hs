@@ -1,6 +1,9 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE LambdaCase      #-}
+
 module Graphics.GL.Pal.Texture where
+
+import Graphics.GL.Pal.Types
 
 import Control.Monad (when)
 import Foreign.Ptr
@@ -8,7 +11,7 @@ import Graphics.GL
 import Graphics.GL.Ext.EXT.TextureFilterAnisotropic
 import Prelude hiding (any, ceiling)
 -- import Util
-import Graphics.GL.Pal.Types
+
 import qualified Codec.Picture as JP
 import qualified Codec.Picture.Types as JP
 import qualified Data.Vector.Storable as SV
