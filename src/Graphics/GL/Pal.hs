@@ -19,5 +19,7 @@ import Graphics.GL.Pal.InferUniforms    as Exports
 import Linear.Extra                     as Exports
 import Data.Colour.Extra                as Exports
 
+import Graphics.GL                      as Exports
+
 import Data.Bits ((.|.))
 import Foreign   (nullPtr)
