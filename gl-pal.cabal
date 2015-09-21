@@ -31,7 +31,6 @@ library
     Graphics.GL.Pal.Types
     Graphics.GL.Pal.Uniforms
     Graphics.GL.Pal.WithActions
-    Linear.Extra
     Data.Colour.Extra
   build-depends:       
       base >= 4.7 && < 5
