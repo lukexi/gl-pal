@@ -1,6 +1,7 @@
 flags: {}
 packages:
 - '.'
+- '../linear-extra'
 extra-deps: []
 resolver: lts-3.0
 arch: x86_64
