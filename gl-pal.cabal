@@ -24,6 +24,7 @@ library
     Graphics.GL.Pal.Shape
     Graphics.GL.Pal.Geometries.Cube
     Graphics.GL.Pal.Geometries.Plane
+    Graphics.GL.Pal.Geometries.Icosahedron
     Graphics.GL.Pal.Geometry
     Graphics.GL.Pal.InferUniforms
     Graphics.GL.Pal.Shader
