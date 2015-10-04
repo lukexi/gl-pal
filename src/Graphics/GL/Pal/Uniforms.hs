@@ -41,12 +41,12 @@ uniformV4 uniform vec4 = glUniform4f (unUniformLocation uniform)
 uniformM44 :: MonadIO m => UniformLocation (M44 GLfloat) -> M44 GLfloat -> m ()
 uniformM44 uniform matrix = liftIO $ do
   let mvpUniformLoc = unUniformLocation uniform
-  withArray (concatMap toList (transpose matrix)) $ \matrixPtr ->
-    glUniformMatrix4fv mvpUniformLoc 1 GL_FALSE matrixPtr
+  with (transpose matrix) $ \ptr ->
+    glUniformMatrix4fv mvpUniformLoc 1 GL_FALSE (castPtr (ptr :: Ptr (M44 GLfloat)))
 
 
 uniformM33 :: MonadIO m => UniformLocation (M33 GLfloat) -> M33 GLfloat -> m ()
 uniformM33 uniform matrix = liftIO $ do
   let mvpUniformLoc = unUniformLocation uniform
-  withArray (concatMap toList (transpose matrix)) $ \matrixPtr ->
-    glUniformMatrix3fv mvpUniformLoc 1 GL_FALSE matrixPtr
+  with (transpose matrix) $ \ptr ->
+    glUniformMatrix3fv mvpUniformLoc 1 GL_FALSE (castPtr (ptr :: Ptr (M33 GLfloat)))

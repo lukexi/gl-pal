@@ -21,6 +21,7 @@ library
     Graphics.GL.Pal
     Graphics.GL.Pal.ArrayBuffer
     Graphics.GL.Pal.AssignAttribute
+    Graphics.GL.Pal.Framebuffer
     Graphics.GL.Pal.Shape
     Graphics.GL.Pal.Geometries.Cube
     Graphics.GL.Pal.Geometries.Plane
