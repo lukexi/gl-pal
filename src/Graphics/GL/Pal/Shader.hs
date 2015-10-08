@@ -96,9 +96,9 @@ getShaderAttribute (Program prog) attributeName = liftIO $ do
   location <- withCString attributeName $ \attributeNameCString -> 
     glGetAttribLocation prog attributeNameCString
 
-  when (location == -1) $ 
-    putStrLn $ "Couldn't bind attribute: " ++ attributeName 
-      ++ " - ignoring since it might have just been optimized out"
+  --when (location == -1) $ 
+  --  putStrLn $ "Couldn't bind attribute: " ++ attributeName 
+  --    ++ " - ignoring since it might have just been optimized out"
 
   return (AttributeLocation location)
 
@@ -110,9 +110,9 @@ getShaderUniform (Program prog) uniformName = liftIO $ do
   location <- withCString uniformName $ \uniformNameCString -> 
     glGetUniformLocation prog uniformNameCString
 
-  when (location == -1) $ 
-    putStrLn $ "Couldn't bind uniform: " ++ uniformName 
-      ++ " - ignoring since it might have just been optimized out"
+  --when (location == -1) $ 
+  --  putStrLn $ "Couldn't bind uniform: " ++ uniformName 
+  --    ++ " - ignoring since it might have just been optimized out"
 
   return (UniformLocation location)
 
