@@ -15,6 +15,7 @@ import Graphics.GL.Pal.Shape                  as Exports
 import Graphics.GL.Pal.Geometries.Cube        as Exports
 import Graphics.GL.Pal.Geometries.Plane       as Exports
 import Graphics.GL.Pal.Geometries.Icosahedron as Exports
+import Graphics.GL.Pal.Geometries.Line        as Exports
 import Graphics.GL.Pal.InferUniforms          as Exports
 import Graphics.GL.Pal.Framebuffer            as Exports
 
