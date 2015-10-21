@@ -3,6 +3,7 @@ module Graphics.GL.Pal.Framebuffer where
 import Graphics.GL
 import Control.Monad.Trans
 import Graphics.GL.Pal.Types
+
 withFramebuffer :: MonadIO m => GLuint -> m a -> m ()
 withFramebuffer framebuffer action = do
   glBindFramebuffer GL_FRAMEBUFFER framebuffer
@@ -28,7 +29,6 @@ createFramebufferTexture sizeX sizeY = do
 -- | Create the framebuffer we'll render into and pass to the Oculus SDK
 createFramebuffer :: GLsizei -> GLsizei -> IO (GLuint, GLuint)
 createFramebuffer sizeX sizeY = do
-  putStrLn $"Creating framebuffer of size" ++ show (sizeX, sizeY)
   framebufferTexture <- createFramebufferTexture sizeX sizeY
 
   framebuffer <- overPtr (glGenFramebuffers 1)
