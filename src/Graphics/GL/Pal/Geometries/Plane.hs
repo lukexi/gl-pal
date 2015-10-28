@@ -10,7 +10,8 @@ import Graphics.GL.Pal.Geometry
 import Linear       hiding ( trace   )
 import Control.Lens hiding ( indices )
 import Data.Foldable
--- import Debug.Trace
+
+import Debug.Trace
 
 fI :: ( Integral a , Num b ) => a -> b
 fI = fromIntegral
@@ -37,7 +38,7 @@ planeData size normal up subdivisions = GeometryData{..}
 
     posArray      = makePlanePositions sizeX sizeY tangent binormal subdivisionsX subdivisionsY
     uvArray       = makePlaneUVs                                    subdivisionsX subdivisionsY
-    indexArray    = makePlaneIndices                                subdivisionsX subdivisionsY
+    indexArray    = makePlaneIndices subdivisionsX subdivisionsY
 
 
     positionList  = posArray
@@ -57,12 +58,13 @@ makePlanePositions xSize ySize xVec yVec subdivisionsX subdivisionsY = positions
   where
 
     positions = concat [ getPoint x  y | x <- [ 0 .. subdivisionsX ] , y <- [ 0 .. subdivisionsY ] ]
-    getPoint x y = toList p
+    getPoint x y =  toList p
       where 
         p = xVec * ( fI x / fI subdivisionsX ) * (realToFrac xSize)
           + yVec * ( fI y / fI subdivisionsY ) * (realToFrac ySize)
           - 0.5 * xVec * (realToFrac xSize)
           - 0.5 * yVec * (realToFrac ySize)
+
 
 
 makePlaneUVs :: Int -> Int -> [ GLfloat ]
@@ -79,10 +81,10 @@ makePlaneIndices :: Int -> Int -> [ GLuint ]
 makePlaneIndices subdivisionsX subdivisionsY = map fI indices
   where
     indices = concat [ getIndices x  y | x <- [ 0 .. subdivisionsX - 1 ] , y <- [ 0 .. subdivisionsY - 1 ] ]
-    getIndices x y = [ p1 , p3 , p2 , p2 , p3 , p4]
+    getIndices x y = [ p1 , p3 , p2 , p2 , p3 , p4 ]
       where 
 
-        p1 = ( x + 0 ) * ( subdivisionsX + 1 ) + ( y + 0 )   
-        p3 = ( x + 0 ) * ( subdivisionsX + 1 ) + ( y + 1 )  
-        p2 = ( x + 1 ) * ( subdivisionsX + 1 ) + ( y + 0 ) 
-        p4 = ( x + 1 ) * ( subdivisionsX + 1 ) + ( y + 1 ) 
+        p1 = ( x + 0 ) * ( subdivisionsY + 1 ) + ( y + 0 )   
+        p3 = ( x + 0 ) * ( subdivisionsY + 1 ) + ( y + 1 )  
+        p2 = ( x + 1 ) * ( subdivisionsY + 1 ) + ( y + 0 ) 
+        p4 = ( x + 1 ) * ( subdivisionsY + 1 ) + ( y + 1 ) 

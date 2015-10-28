@@ -38,6 +38,16 @@ uniformV4 uniform vec4 = glUniform4f (unUniformLocation uniform)
                                      (vec4 ^. _z)
                                      (vec4 ^. _w)
 
+uniformV4V :: MonadIO m => UniformLocation [V4 GLfloat] -> [V4 GLfloat] -> m ()
+uniformV4V uniform array = liftIO $ do
+  
+  let uniformLoc = unUniformLocation uniform
+      finalArray = concatMap toList array
+
+  withArrayLen finalArray $ \count ptr ->
+      glUniform4fv uniformLoc (fromIntegral count) ptr
+
+
 uniformM44 :: MonadIO m => UniformLocation (M44 GLfloat) -> M44 GLfloat -> m ()
 uniformM44 uniform matrix = liftIO $ do
   let mvpUniformLoc = unUniformLocation uniform
