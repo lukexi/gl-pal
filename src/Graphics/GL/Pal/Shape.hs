@@ -15,13 +15,16 @@ import Data.Data
 
 import Foreign
 
+newVAO :: MonadIO m => m VertexArrayObject
+newVAO = VertexArrayObject <$> overPtr (glGenVertexArrays 1)
+
 -- | A shape is the combination of a VAO, a program, 
 -- and the collection of uniforms for that program.
 makeShape :: Data u => Geometry -> Program -> IO (Shape u)
 makeShape sGeometry@Geometry{..} sProgram = do
 
   -- Setup a VAO
-  sVAO <- VertexArrayObject <$> overPtr ( glGenVertexArrays 1 )
+  sVAO <- newVAO
 
   withVAO sVAO $ do
 
@@ -36,8 +39,6 @@ makeShape sGeometry@Geometry{..} sProgram = do
   sUniforms <- acquireUniforms sProgram
 
   return Shape{..}
-
-
   
 withShape :: MonadIO m => Shape t -> ReaderT (Shape t) m a -> m ()
 withShape shape@Shape{..} action = do

@@ -2,15 +2,16 @@
 module Graphics.GL.Pal.Geometry where 
 import Graphics.GL.Pal.Types
 import Graphics.GL.Pal.ArrayBuffer
+import Graphics.GL
 
 geometryFromData :: GeometryData -> IO Geometry
 geometryFromData GeometryData{..} = do
 
-  geoPositions   <- bufferData         gdPositions
-  geoNormals     <- bufferData         gdNormals
-  geoTangents    <- bufferData         gdTangents
-  geoUVs         <- bufferData         gdUVs
-  geoIndices     <- bufferElementData  gdIndices
+  geoPositions   <- bufferData GL_STATIC_DRAW gdPositions
+  geoNormals     <- bufferData GL_STATIC_DRAW gdNormals
+  geoTangents    <- bufferData GL_STATIC_DRAW gdTangents
+  geoUVs         <- bufferData GL_STATIC_DRAW gdUVs
+  geoIndices     <- bufferElementData gdIndices
   
   let geoVertCount = gdNumVerts
 
