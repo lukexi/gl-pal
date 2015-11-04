@@ -6,12 +6,12 @@ import Graphics.GL.Pal.ArrayBuffer
 geometryFromData :: GeometryData -> IO Geometry
 geometryFromData GeometryData{..} = do
 
-  positions   <- bufferData         positionList
-  normals     <- bufferData         normalList
-  tangents    <- bufferData         tangentList
-  uvs         <- bufferData         uvList
-  indices     <- bufferElementData  indexList
+  geoPositions   <- bufferData         gdPositions
+  geoNormals     <- bufferData         gdNormals
+  geoTangents    <- bufferData         gdTangents
+  geoUVs         <- bufferData         gdUVs
+  geoIndices     <- bufferElementData  gdIndices
   
-  let vertCount = numVerts
+  let geoVertCount = gdNumVerts
 
   return Geometry{..}

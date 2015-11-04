@@ -8,7 +8,7 @@ import Graphics.GL.Pal.Types
 withVAO :: MonadIO m => VertexArrayObject -> m a -> m ()
 withVAO aVAO action = do
 
-  glBindVertexArray ( unVertexArrayObject aVAO )
+  glBindVertexArray (unVertexArrayObject aVAO)
 
   _ <- action
 
@@ -18,7 +18,7 @@ withVAO aVAO action = do
 withArrayBuffer :: MonadIO m => ArrayBuffer -> m a -> m ()
 withArrayBuffer buffer action = do
 
-  glBindBuffer GL_ARRAY_BUFFER ( unArrayBuffer buffer )
+  glBindBuffer GL_ARRAY_BUFFER (unArrayBuffer buffer)
 
   _ <- action
   
@@ -27,7 +27,7 @@ withArrayBuffer buffer action = do
 withElementArrayBuffer :: MonadIO m => ElementArrayBuffer -> m a -> m ()
 withElementArrayBuffer buffer action = do
 
-  glBindBuffer GL_ELEMENT_ARRAY_BUFFER ( unElementArrayBuffer buffer )
+  glBindBuffer GL_ELEMENT_ARRAY_BUFFER (unElementArrayBuffer buffer)
 
   _ <- action
   

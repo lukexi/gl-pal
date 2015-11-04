@@ -8,10 +8,10 @@ import Graphics.GL.Pal.Types
 import Graphics.GL.Pal.Geometry
 
 import Linear       hiding ( trace   )
-import Control.Lens hiding ( indices )
+-- import Control.Lens hiding ( indices )
 import Data.Foldable
-import Debug.Trace
-import Control.Arrow
+-- import Debug.Trace
+-- import Control.Arrow
 
 --fI :: ( Integral a , Num b ) => a -> b
 --fI = fromIntegral
@@ -21,24 +21,14 @@ lineData  subdivisions = GeometryData{..}
 
   where
 
-    numVerts  = 2 * (( fromIntegral subdivisions ) - 1 )
-    numPoints = fromIntegral subdivisions
+    gdNumVerts    = 2 * (( fromIntegral subdivisions ) - 1 )
+    gdNumPoints   = fromIntegral subdivisions
 
-    posArray      = makeLinePositions subdivisions
-    uvArray       = makeLineUVs       subdivisions
-    indexArray    = makeLineIndicies  subdivisions 
-    normalArray   = makeLineNormals   subdivisions
-    tanArray      = makeLineTangents  subdivisions
-
-
-
-    positionList  = posArray
-    normalList    = normalArray
-    
-    tangentList   = tanArray
-    uvList        = uvArray
-
-    indexList     = indexArray  
+    gdPositions   = makeLinePositions subdivisions
+    gdUVs         = makeLineUVs       subdivisions
+    gdIndices     = makeLineIndicies  subdivisions 
+    gdNormals     = makeLineNormals   subdivisions
+    gdTangents    = makeLineTangents  subdivisions
 
 
 makeLinePositions :: GLuint -> [ GLfloat ]
@@ -61,7 +51,7 @@ makeLineNormals :: GLuint -> [ GLfloat ]
 makeLineNormals subdivisions = positions
   where
     positions = concatMap getPoint [0..subdivisions]
-    getPoint i = toList p
+    getPoint _ = toList p
       where
         p = V3 0 1 0
 
@@ -69,7 +59,7 @@ makeLineTangents :: GLuint -> [ GLfloat ]
 makeLineTangents subdivisions = positions
   where
     positions = concatMap getPoint [0..subdivisions]
-    getPoint i = toList p
+    getPoint _ = toList p
       where
         p = V3 0 0 1
 

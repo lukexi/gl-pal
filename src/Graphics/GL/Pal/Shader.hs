@@ -3,23 +3,23 @@ module Graphics.GL.Pal.Shader where
 import Graphics.GL.Pal.Types
 
 import Graphics.GL
-import Graphics.GL.Ext.ARB.ShadingLanguageInclude
+-- import Graphics.GL.Ext.ARB.ShadingLanguageInclude
 
 import Control.Monad
 import Control.Monad.Trans
 
 import Foreign
 import Foreign.C.String
-import Foreign.ForeignPtr
-import Foreign.Marshal.Alloc
-import Foreign.Marshal.Array
-import Foreign.Ptr
-import Foreign.Storable
+-- import Foreign.ForeignPtr
+-- import Foreign.Marshal.Alloc
+-- import Foreign.Marshal.Array
+-- import Foreign.Ptr
+-- import Foreign.Storable
 
-import qualified Data.ByteString as Strict
-import qualified Data.ByteString.Unsafe as Strict
-import qualified Data.ByteString.Internal as Strict
-import qualified Data.ByteString.Lazy as Lazy
+-- import qualified Data.ByteString as Strict
+-- import qualified Data.ByteString.Unsafe as Strict
+-- import qualified Data.ByteString.Internal as Strict
+-- import qualified Data.ByteString.Lazy as Lazy
 
 import qualified Data.ByteString as BS
 import qualified Data.Text.Encoding as Text

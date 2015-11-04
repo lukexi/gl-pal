@@ -10,7 +10,7 @@ import Graphics.GL.Pal.Geometry
 import Linear       hiding ( trace   )
 import Control.Lens hiding ( indices )
 import Data.Foldable
-import Debug.Trace
+-- import Debug.Trace
 import Control.Arrow
 
 --fI :: ( Integral a , Num b ) => a -> b
@@ -21,7 +21,7 @@ icosahedronData size subdivisions = GeometryData{..}
 
   where
 
-    t  = ( 1 + sqrt 5  ) / 2
+    -- t  = ( 1 + sqrt 5  ) / 2
 
     -- The base Array of vertices
   {-  vertList      = [ V3  (-1)   t    0 
@@ -62,12 +62,12 @@ icosahedronData size subdivisions = GeometryData{..}
 -}
 
           -- The base Array of vertices
-    vertList      = [ V3  1 0 0 
-                    , V3  0 1 0 
-                    , V3  0 0 1 
-                    , V3  (-1) 0 0 
-                    , V3  0 (-1) 0 
-                    , V3  0 0 (-1) 
+    vertList      = [ V3 1 0 0 
+                    , V3 0 1 0 
+                    , V3 0 0 1 
+                    , V3 (-1) 0 0 
+                    , V3 0 (-1) 0 
+                    , V3 0 0 (-1) 
                     ]
 
     faceList      = [ V3 2 0 1
@@ -85,31 +85,25 @@ icosahedronData size subdivisions = GeometryData{..}
     --subdividedVertList  = subdivideVerts vertList
     --subdividedIndexList = subdivideIndices indexList
 
-    numVerts  = 3 * fromIntegral ( length newFaceList ) 
-    numPoints = 3 * fromIntegral ( length newVertList )
+    gdNumVerts  = 3 * fromIntegral ( length newFaceList ) 
+    gdNumPoints = 3 * fromIntegral ( length newVertList )
 
-    posArray      = makeIcosahedronPositions size newVertList
-    uvArray       = makeIcosahedronUVs newVertList
-    indexArray    = makeIcosahedronIndicies  newFaceList 
-    normalArray   = makeIcosahedronNormals  newVertList
-    tanArray      = makeIcosahedronTangents newVertList
-
-
-
-    positionList  = posArray
-    normalList    = normalArray
-    
-    tangentList   = tanArray
-    uvList        = uvArray
-
-    indexList     = indexArray  
+    gdPositions   = makeIcosahedronPositions size newVertList
+    gdUVs         = makeIcosahedronUVs      newVertList
+    gdIndices     = makeIcosahedronIndices newFaceList 
+    gdNormals     = makeIcosahedronNormals  newVertList
+    gdTangents    = makeIcosahedronTangents newVertList
 
 
-makeIcosahedronPositions :: GLfloat -> [V3 GLfloat] -> [ GLfloat ]
-makeIcosahedronPositions size vertList  = concatMap toList ( map ( realToFrac size * ) vertList )
+makeIcosahedronPositions :: GLfloat -> [V3 GLfloat] -> [GLfloat]
+makeIcosahedronPositions size vertList  = concatMap toList (map (realToFrac size *) vertList)
 
-makeIcosahedronIndicies indexList       = concatMap toList indexList
-makeIcosahedronNormals positionList     = concatMap toList ( map normalize positionList ) 
+makeIcosahedronIndices :: (Foldable t, Foldable t1) => t (t1 b) -> [b]
+makeIcosahedronIndices indexList       = concatMap toList indexList
+
+makeIcosahedronNormals :: (Floating b, Foldable t, Metric t, Epsilon b) 
+                       => [t b] -> [b]
+makeIcosahedronNormals positionList     = concatMap toList (map normalize positionList) 
 
 makeIcosahedronUVs :: [V3 GLfloat] -> [ GLfloat ]
 makeIcosahedronUVs     positionList     = uvs
@@ -117,22 +111,28 @@ makeIcosahedronUVs     positionList     = uvs
     where 
         uvs = concat [ getUV p | p <- positionList  ]
         getUV p = 
-            let u = ((( azimuth p ) / 2) / pi ) + 0.5
-                v = ( inclination p / pi ) + 0.5
-            in [ u , 1 - v ] 
+            let u = ((azimuth p / 2) / pi) + 0.5
+                v = (inclination p / pi) + 0.5
+            in [ u , 1 - v ]
 
-azimuth vector = atan2 (vector ^. _z) ((-vector ^. _x))
-inclination vector = 
+azimuth :: (RealFloat a, R3 t) => t a -> a
+azimuth vec = atan2 (vec ^. _z) ((-vec ^. _x))
+
+inclination :: (RealFloat a, R3 t) => t a -> a
+inclination vec = 
     atan2 
-        (-vector ^. _y) 
-        (sqrt(  ( (vector ^. _x) ** (vector ^. _x) ) + 
-                ( (vector ^. _z) ** (vector ^. _z) ) ) )
+        (-vec ^. _y) 
+        (sqrt (
+            ((vec ^. _x) ** (vec ^. _x)) + 
+            ((vec ^. _z) ** (vec ^. _z))
+            )
+        )
 
 makeIcosahedronTangents :: [V3 GLfloat] -> [ GLfloat ]
 makeIcosahedronTangents positionList = tangents
     where 
         tangents = concatMap getTangent [0..length positionList]
-        getTangent p = [0, 0, 0]
+        getTangent _ = [0, 0, 0]
 
 
 icosahedronGeometry :: GLfloat -> GLuint -> IO Geometry   
@@ -143,7 +143,7 @@ subdivide ( vertList , faceList ) 0 = (vertList , faceList)
 subdivide ( vertList , faceList ) n = subdivide floopules (n - 1)
   where 
     floopules = first concat . second concat . unzip $ map getNewVerts (zip [0..] faceList)
-    getNewVerts (index , face) =
+    getNewVerts (i, face) =
       let v1 = vertList !! fromIntegral (face ^. _x)
           v2 = vertList !! fromIntegral (face ^. _y)
           v3 = vertList !! fromIntegral (face ^. _z)
@@ -158,14 +158,10 @@ subdivide ( vertList , faceList ) n = subdivide floopules (n - 1)
                         , V3 5 3 4
                         , V3 5 4 2
                         ]
-          faceListOffset = fmap (fmap (+ (index * 6))) newFaceList
+          faceListOffset = fmap (fmap (+ (i * 6))) newFaceList
           vertListNormal = fmap normalize newVertList
 
-      in ( vertListNormal , faceListOffset)
-    
-    
-
-
+      in (vertListNormal , faceListOffset)
 
 
 getMidpoint :: V3 GLfloat -> V3 GLfloat -> V3 GLfloat

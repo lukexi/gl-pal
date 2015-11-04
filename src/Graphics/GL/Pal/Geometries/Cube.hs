@@ -86,34 +86,34 @@ makeCubePoints (n1,n2,n3,n4,n5,n6) (u1,u2,u3,u4,u5,u6) (s1,s2,s3,s4,s5,s6) (d1,d
     plane5 = planeData s5 n5 u5 d5
     plane6 = planeData s6 n6 u6 d6
     planes = [plane1, plane2, plane3, plane4, plane5, plane6]
-    planeNumPoints = map numPoints planes
+    planeNumPoints = map gdNumPoints planes
 
-    f1 = updatePlanePos plane1 n1 (numPoints plane1) (sum . take 0 $ planeNumPoints)
-    f2 = updatePlanePos plane2 n2 (numPoints plane2) (sum . take 1 $ planeNumPoints)
-    f3 = updatePlanePos plane3 n3 (numPoints plane3) (sum . take 2 $ planeNumPoints)
-    f4 = updatePlanePos plane4 n4 (numPoints plane4) (sum . take 3 $ planeNumPoints)
-    f5 = updatePlanePos plane5 n5 (numPoints plane5) (sum . take 4 $ planeNumPoints)
-    f6 = updatePlanePos plane6 n6 (numPoints plane6) (sum . take 5 $ planeNumPoints)
+    f1 = updatePlanePos plane1 n1 (gdNumPoints plane1) (sum . take 0 $ planeNumPoints)
+    f2 = updatePlanePos plane2 n2 (gdNumPoints plane2) (sum . take 1 $ planeNumPoints)
+    f3 = updatePlanePos plane3 n3 (gdNumPoints plane3) (sum . take 2 $ planeNumPoints)
+    f4 = updatePlanePos plane4 n4 (gdNumPoints plane4) (sum . take 3 $ planeNumPoints)
+    f5 = updatePlanePos plane5 n5 (gdNumPoints plane5) (sum . take 4 $ planeNumPoints)
+    f6 = updatePlanePos plane6 n6 (gdNumPoints plane6) (sum . take 5 $ planeNumPoints)
     fs = [f1,f2,f3,f4,f5,f6]
 
     finalData = GeometryData 
-      { positionList = concatMap positionList fs
-      , indexList    = concatMap indexList fs
-      , uvList       = concatMap uvList fs
-      , normalList   = concatMap normalList fs
-      , tangentList  = concatMap tangentList fs
-      , numVerts     = sum $ map numVerts fs
-      , numPoints    = sum $ map numPoints fs
+      { gdPositions = concatMap gdPositions fs
+      , gdIndices   = concatMap gdIndices fs
+      , gdUVs       = concatMap gdUVs fs
+      , gdNormals   = concatMap gdNormals fs
+      , gdTangents  = concatMap gdTangents fs
+      , gdNumVerts  = sum $ map gdNumVerts fs
+      , gdNumPoints = sum $ map gdNumPoints fs
       } 
 
     updatePlanePos :: GeometryData -> V3 GLfloat -> GLuint -> GLuint -> GeometryData
-    updatePlanePos plane normal nPoints startIndex = plane { positionList = fPos, indexList = fIndex }
+    updatePlanePos plane normal nPoints startIndex = plane { gdPositions = fPos, gdIndices = fIndex }
       where
-        pos    = positionList plane
-        posX   = take ( fI nPoints * 3  ) $ cycle ( toList ( normal * size * V3 0.5 0.5 0.5 ) )
+        pos    = gdPositions plane
+        posX   = take (fI nPoints * 3) $ cycle (toList (normal * size * V3 0.5 0.5 0.5))
         fPos   = zipWith (+) pos posX
         newI   = startIndex + 0
-        fIndex = map ( + newI ) ( indexList plane )
+        fIndex = map (+ newI) (gdIndices plane)
 
 
       

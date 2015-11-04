@@ -24,5 +24,7 @@ import Data.Colour.Extra                      as Exports
 
 import Graphics.GL                            as Exports
 
+import Data.Data                              as Exports
+
 import Data.Bits ((.|.))
 import Foreign   (nullPtr)

@@ -29,22 +29,22 @@ newtype UniformLocation a =
   deriving (Data, Typeable, Show)
 
 data Geometry = Geometry
-  { positions     :: !ArrayBuffer
-  , normals       :: !ArrayBuffer
-  , tangents      :: !ArrayBuffer
-  , uvs           :: !ArrayBuffer
-  , indices       :: !ElementArrayBuffer
-  , vertCount     :: !GLsizei
+  { geoPositions     :: !ArrayBuffer
+  , geoNormals       :: !ArrayBuffer
+  , geoTangents      :: !ArrayBuffer
+  , geoUVs           :: !ArrayBuffer
+  , geoIndices       :: !ElementArrayBuffer
+  , geoVertCount     :: !GLsizei
   }
 
 data GeometryData = GeometryData
-  { positionList  :: ![ GLfloat ]
-  , normalList    :: ![ GLfloat ]
-  , tangentList   :: ![ GLfloat ]
-  , uvList        :: ![ GLfloat ]
-  , indexList     :: ![ GLuint  ]
-  , numVerts      :: !GLsizei
-  , numPoints     :: !GLuint
+  { gdPositions  :: ![ GLfloat ]
+  , gdNormals    :: ![ GLfloat ]
+  , gdTangents   :: ![ GLfloat ]
+  , gdUVs        :: ![ GLfloat ]
+  , gdIndices    :: ![ GLuint  ]
+  , gdNumVerts   :: !GLsizei
+  , gdNumPoints  :: !GLuint
   }
 
 data Shape u = Shape
