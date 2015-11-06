@@ -13,33 +13,37 @@ import Data.Foldable
 -- import Debug.Trace
 -- import Control.Arrow
 
-fI :: ( Integral a , Num b ) => a -> b
-fI = fromIntegral
+
 
 gridData :: V3 GLfloat -> V3 Int -> GeometryData
 gridData  size subdivisions = GeometryData{..}
-
+  
   where
     subX = fromIntegral (subdivisions ^. _x)
     subY = fromIntegral (subdivisions ^. _y)
     subZ = fromIntegral (subdivisions ^. _z)
 
+    subX' = fromIntegral (subdivisions ^. _x)
+    subY' = fromIntegral (subdivisions ^. _y)
+    subZ' = fromIntegral (subdivisions ^. _z)
+
     subXY = (2 * ( subX + 1 ) * (subY + 1))
     subYZ = (2 * ( subY + 1 ) * (subZ + 1))
     subXZ = (2 * ( subX + 1 ) * (subZ + 1))
 
-    sizeX = fI (size ^. _x)
-    sizeY = fI (size ^. _x)
-    sizeZ = fI (size ^. _x)
+    sizeX = (size ^. _x)
+    sizeY = (size ^. _y)
+    sizeZ = (size ^. _z)
 
-    gdNumVerts    = subXY + subYZ + subXZ
-    gdNumPoints   = gdNumVerts
+    gdNumVerts    = fromIntegral $  (subXY + subYZ + subXZ) 
+    gdNumPoints   = fromIntegral gdNumVerts
 
-    gdPositions   = makeGridPositions sizeX sizeY sizeZ subX subY subZ
-    gdUVs         = makeGridUVs       gdNumVerts
-    gdIndices     = makeGridIndicies  gdNumVerts 
-    gdNormals     = makeGridNormals   gdNumVerts
-    gdTangents    = makeGridTangents  gdNumVerts
+    gdPositions   = makeGridPositions sizeX sizeY sizeZ subX' subY' subZ'
+    gdUVs         = makeGridUVs       $ fromIntegral gdNumVerts
+    gdIndices     = makeGridIndicies  $ fromIntegral gdNumVerts 
+    gdNormals     = makeGridNormals   $ fromIntegral gdNumVerts
+    gdTangents    = makeGridTangents  $ fromIntegral gdNumVerts
+
 
 
 makeGridPositions :: GLfloat -> GLfloat -> GLfloat -> Int -> Int -> Int -> [ GLfloat ]
@@ -47,64 +51,74 @@ makeGridPositions xSize ySize zSize subX subY subZ = positions
 
   where
     
-    xVec = (V3 1 0 0)::GLfloat
-    yVec = (V3 0 1 0)::GLfloat
-    zVec = (V3 0 0 1)::GLfloat
+    xVec = V3 1 0 0 :: V3 GLfloat
+    yVec = V3 0 1 0 :: V3 GLfloat
+    zVec = V3 0 0 1 :: V3 GLfloat
+
+
+    xSizeVec = realToFrac xSize
+    ySizeVec = realToFrac ySize
+    zSizeVec = realToFrac zSize
+
+    xSubVec = fromIntegral subX
+    ySubVec = fromIntegral subY
+    zSubVec = fromIntegral subZ
+
     
 
     positions = concat
-                [ concat [ getPointZ x y | x <- [ 0 .. subX ] , y <- [ 0 .. subY ] ]
-                , concat [ getPointX y z | y <- [ 0 .. subY ] , z <- [ 0 .. subZ ] ]
-                , concat [ getPointY x z | x <- [ 0 .. subX ] , z <- [ 0 .. subZ ] ]
+                [ concat [ getPointZ (realToFrac x) (realToFrac y) | x <- [ 0 .. subX ] , y <- [ 0 .. subY ] ]
+                , concat [ getPointX (realToFrac y) (realToFrac z) | y <- [ 0 .. subY ] , z <- [ 0 .. subZ ] ]
+                , concat [ getPointY (realToFrac x) (realToFrac z) | x <- [ 0 .. subX ] , z <- [ 0 .. subZ ] ]
                 ]
 
-    getPointZ :: GLfloat -> GLfloat -> [GLfloat]
-    getPointZ x y = concat [ (toList pDo) , (toList pUp) ]
+    getPointZ :: V3 GLfloat -> V3 GLfloat -> [GLfloat]
+    getPointZ x y = concat [ toList pDo , toList pUp ]
       where 
 
-        pUp = xVec * (x / subX) * xSize
-            + yVec * (y / subY) * ySize
-            - 0.5 * xVec * xSize
-            - 0.5 * yVec * ySize
-            + 0.5 * zVec * zSize
+        pUp = xVec * (x / xSubVec) * xSizeVec
+            + yVec * (y / ySubVec) * ySizeVec
+            - 0.5 * xVec * xSizeVec
+            - 0.5 * yVec * ySizeVec
+            + 0.5 * zVec * zSizeVec
 
-        pDo = xVec * (x / subX) * xSize
-            + yVec * (y / subY) * ySize
-            - 0.5 * xVec * xSize
-            - 0.5 * yVec * ySize
-            - 0.5 * zVec * zSize
+        pDo = xVec * (x / xSubVec) * xSizeVec
+            + yVec * (y / ySubVec) * ySizeVec
+            - 0.5 * xVec * xSizeVec
+            - 0.5 * yVec * ySizeVec
+            - 0.5 * zVec * zSizeVec
 
-    getPointY :: GLfloat -> GLfloat -> [GLfloat]
-    getPointY x z = concat [ (toList pDo) , (toList pUp) ]
+    getPointY :: V3 GLfloat -> V3 GLfloat -> [GLfloat]
+    getPointY x z = concat [ toList pDo , toList pUp ]
       where 
 
-        pUp = xVec * (x / fI subX) * xSize
-            + zVec * (z / fI subZ) * zSize
-            - 0.5 * xVec * xSize
-            - 0.5 * zVec * zSize
-            + 0.5 * yVec * ySize
+        pUp = xVec * (x / xSubVec) * xSizeVec
+            + zVec * (z / zSubVec) * zSizeVec
+            - 0.5 * xVec * xSizeVec
+            - 0.5 * zVec * zSizeVec
+            + 0.5 * yVec * ySizeVec
 
-        pDo = xVec * (x / fI subX) * xSize
-            + zVec * (z / fI subZ) * zSize
-            - 0.5 * xVec * xSize
-            - 0.5 * zVec * zSize
-            - 0.5 * yVec * ySize
+        pDo = xVec * (x / xSubVec) * xSizeVec
+            + zVec * (z / zSubVec) * zSizeVec
+            - 0.5 * xVec * xSizeVec
+            - 0.5 * zVec * zSizeVec
+            - 0.5 * yVec * ySizeVec
 
-    getPointX :: GLfloat -> GLfloat -> [GLfloat]
+    getPointX :: V3 GLfloat -> V3 GLfloat -> [GLfloat]
     getPointX y z = concat [ pDo , pUp ]
       where 
 
-        pUp = toList $    yVec * (y / fI subY) * ySize
-                        + zVec * (z / fI subZ) * zSize
-                        - 0.5 * yVec * ySize
-                        - 0.5 * zVec * zSize
-                        + 0.5 * xVec * xSize
+        pUp = toList $    yVec * (y / ySubVec) * ySizeVec
+                        + zVec * (z / zSubVec) * zSizeVec
+                        - 0.5 * yVec * ySizeVec
+                        - 0.5 * zVec * zSizeVec
+                        + 0.5 * xVec * xSizeVec
 
-        pDo = toList $    yVec * (y / (fI subY)) * (ySize)
-                        + zVec * (z / (fI subZ)) * (zSize)
-                        - 0.5 * yVec * (ySize)
-                        - 0.5 * zVec * (zSize)
-                        - 0.5 * xVec * (xSize)
+        pDo = toList $    yVec * (y / ySubVec) * ySizeVec
+                        + zVec * (z / zSubVec) * zSizeVec
+                        - 0.5 * yVec * ySizeVec
+                        - 0.5 * zVec * zSizeVec
+                        - 0.5 * xVec * xSizeVec
         
 
 makeGridIndicies :: GLuint -> [ GLuint ]
