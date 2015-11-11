@@ -13,8 +13,6 @@ import Data.Foldable
 
 -- import Debug.Trace
 
-fI :: (Integral a , Num b) => a -> b
-fI = fromIntegral
 
 planeData :: V2 GLfloat -> V3 GLfloat -> V3 GLfloat -> V2 Int -> GeometryData
 planeData size normal up subdivisions = GeometryData{..}

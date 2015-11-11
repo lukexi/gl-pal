@@ -62,3 +62,6 @@ overPtr f = liftIO (alloca (\p -> f p >> peek p))
 
 traceL :: Show a => String -> a -> a
 traceL label value = trace (label ++ ": " ++ show value) value
+
+fI :: ( Integral a , Num b ) => a -> b
+fI = fromIntegral
