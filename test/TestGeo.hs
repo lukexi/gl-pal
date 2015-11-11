@@ -12,8 +12,8 @@ data Uniforms = Uniforms
   { uMVP :: UniformLocation (M44 GLfloat) } 
   deriving Data
 
-myLine :: Program -> IO (VertexArrayObject, ArrayBuffer, GLsizei)
-myLine shader = do
+makeLine :: Program -> IO (VertexArrayObject, ArrayBuffer, GLsizei)
+makeLine shader = do
 
   let verts = map (\x -> V3 x 0 0) [-1,-0.95..1]
       vertCount = length verts
@@ -41,8 +41,8 @@ main :: IO ()
 main = do
   (win, events) <- reacquire 0 $ createWindow "Geometry Test" 1024 768
 
-  shader    <- createShaderProgram "test/geo.vert" "test/geo.frag"
-  Uniforms{..} <- acquireUniforms shader
+  shader        <- createShaderProgram "test/geo.vert" "test/geo.frag"
+  Uniforms{..}  <- acquireUniforms shader
 
   icoGeo     <- icosahedronGeometry 0.5 5
   icoShape   <- makeShape icoGeo shader
@@ -58,7 +58,7 @@ main = do
                , (planeShape, V3 0 (-1) 0)
                ]
 
-  (lineVAO, lineBuffer, lineVertCount) <- myLine shader
+  (lineVAO, lineBuffer, lineVertCount) <- makeLine shader
 
   glEnable GL_DEPTH_TEST
 

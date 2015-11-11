@@ -30,6 +30,7 @@ library
     Graphics.GL.Pal.Geometry
     Graphics.GL.Pal.InferUniforms
     Graphics.GL.Pal.Shader
+    Graphics.GL.Pal.Reshader
     Graphics.GL.Pal.Texture
     Graphics.GL.Pal.Types
     Graphics.GL.Pal.Uniforms
@@ -47,6 +48,9 @@ library
     , linear
     , linear-extra
     , colour
+    , fsnotify
+    , filepath
+    , stm
   default-language:    Haskell2010
 
 test-suite test-geo
