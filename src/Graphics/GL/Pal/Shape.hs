@@ -51,3 +51,9 @@ drawShape = do
   Shape{..} <- ask
   let vc = geoVertCount sGeometry
   glDrawElements GL_TRIANGLES vc GL_UNSIGNED_INT nullPtr
+
+drawShapeInstanced :: (MonadReader (Shape u) m, MonadIO m) => GLsizei -> m ()
+drawShapeInstanced instanceCount = do
+  Shape{..} <- ask
+  let vc = geoVertCount sGeometry
+  glDrawElementsInstanced GL_TRIANGLES vc GL_UNSIGNED_INT nullPtr instanceCount

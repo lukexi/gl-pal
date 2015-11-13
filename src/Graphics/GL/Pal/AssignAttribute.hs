@@ -16,7 +16,7 @@ assignAttribute prog attributeName attributeLength = do
 
   glVertexAttribPointer
     (fromIntegral (unAttributeLocation attribute)) -- attribute
-    attributeLength   -- number of elements per vertex, here (x,y,z)
+    attributeLength   -- number of elements per vertex, e.g. (x,y,z)
     GL_FLOAT          -- the type of each element
     GL_FALSE          -- don't normalize
     0                 -- no extra data between each position

@@ -9,33 +9,8 @@ import Data.Foldable
 import System.Random
 
 data Uniforms = Uniforms 
-  { uMVP :: UniformLocation (M44 GLfloat) } 
-  deriving Data
-
-makeLine :: Program -> IO (VertexArrayObject, ArrayBuffer, GLsizei)
-makeLine shader = do
-
-  let verts = map (\x -> V3 x 0 0) [-1,-0.95..1]
-      vertCount = length verts
-      normals = replicate vertCount (V3 0 0 1)
-  
-  positionsBuffer <- bufferData GL_DYNAMIC_DRAW (concatMap toList verts)
-  normalsBuffer   <- bufferData GL_STATIC_DRAW (concatMap toList normals)
-
-  vao <- newVAO
-  withVAO vao $ do
-    withArrayBuffer positionsBuffer $ assignAttribute shader "aPosition" 3
-    withArrayBuffer normalsBuffer $ assignAttribute shader "aNormal" 3
-
-  return (vao, positionsBuffer, fromIntegral vertCount)
-
-randomVerts :: (Integral a, Fractional b, Random b) 
-            => a -> IO [V3 b]
-randomVerts lineVertCount = forM [0..lineVertCount-1] $ \i -> do
-  let x = fromIntegral i / fromIntegral lineVertCount
-      x' = x * 2 - 1
-  y <- randomIO
-  return (V3 x' y 0)
+  { uMVP :: UniformLocation (M44 GLfloat) 
+  } deriving Data
 
 main :: IO ()
 main = do
@@ -89,3 +64,28 @@ main = do
       glDrawArrays GL_LINE_STRIP 0 lineVertCount
 
     swapBuffers win
+
+makeLine :: Program -> IO (VertexArrayObject, ArrayBuffer, GLsizei)
+makeLine shader = do
+
+  let verts = map (\x -> V3 x 0 0) [-1,-0.95..1]
+      vertCount = length verts
+      normals = replicate vertCount (V3 0 0 1)
+  
+  positionsBuffer <- bufferData GL_DYNAMIC_DRAW (concatMap toList verts)
+  normalsBuffer   <- bufferData GL_STATIC_DRAW (concatMap toList normals)
+
+  vao <- newVAO
+  withVAO vao $ do
+    withArrayBuffer positionsBuffer $ assignAttribute shader "aPosition" 3
+    withArrayBuffer normalsBuffer $ assignAttribute shader "aNormal" 3
+
+  return (vao, positionsBuffer, fromIntegral vertCount)
+
+randomVerts :: (Integral a, Fractional b, Random b) 
+            => a -> IO [V3 b]
+randomVerts lineVertCount = forM [0..lineVertCount-1] $ \i -> do
+  let x = fromIntegral i / fromIntegral lineVertCount
+      x' = x * 2 - 1
+  y <- randomIO
+  return (V3 x' y 0)
