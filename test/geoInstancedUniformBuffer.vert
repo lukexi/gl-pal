@@ -12,7 +12,7 @@ in vec3 aNormal;
 
 out vec3 vNormal;
 
-void main( void ) {
+void main() {
   vec4 offset = offsets[gl_InstanceID];
   
   gl_Position = uMVP * vec4(aPosition, 1.0) + offset;

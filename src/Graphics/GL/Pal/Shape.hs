@@ -10,6 +10,7 @@ import Graphics.GL.Pal.Types
 import Graphics.GL.Pal.InferUniforms
 import Graphics.GL.Pal.WithActions
 import Graphics.GL.Pal.AssignAttribute
+import Graphics.GL.Pal.ArrayBuffer
 import Graphics.GL.Pal.Shader
 import Data.Data
 
@@ -33,14 +34,13 @@ makeShape sGeometry@Geometry{..} sProgram = do
     withArrayBuffer geoTangents  $ assignAttribute sProgram "aTangent"  3
     withArrayBuffer geoUVs       $ assignAttribute sProgram "aUV"       2 
 
-    glBindBuffer GL_ELEMENT_ARRAY_BUFFER (unElementArrayBuffer geoIndices)
-
+    bindElementArrayBuffer geoIndices
 
   sUniforms <- acquireUniforms sProgram
 
   return Shape{..}
   
-withShape :: MonadIO m => Shape t -> ReaderT (Shape t) m a -> m ()
+withShape :: MonadIO m => Shape t -> ReaderT (Shape t) m a -> m a
 withShape shape@Shape{..} action = do
   useProgram sProgram
   withVAO sVAO (runReaderT action shape)
