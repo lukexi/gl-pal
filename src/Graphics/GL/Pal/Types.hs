@@ -20,6 +20,7 @@ newtype TextureID           = TextureID           { unTextureID           :: GLu
 newtype VertexArrayObject   = VertexArrayObject   { unVertexArrayObject   :: GLuint }
 newtype ArrayBuffer         = ArrayBuffer         { unArrayBuffer         :: GLuint }
 newtype ElementArrayBuffer  = ElementArrayBuffer  { unElementArrayBuffer  :: GLuint }
+newtype UniformBuffer       = UniformBuffer       { unUniformBuffer       :: GLuint }
 
 newtype TextureObject       = TextureObject       { unTextureObject       :: GLuint }
 

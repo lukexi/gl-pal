@@ -8,6 +8,9 @@ import Graphics.GL.Pal.WithActions
 
 import Control.Monad.Trans
 
+newUniformBuffer :: MonadIO m => m UniformBuffer
+newUniformBuffer = UniformBuffer <$> overPtr (glGenBuffers 1)
+
 newArrayBuffer :: MonadIO m => m ArrayBuffer
 newArrayBuffer = ArrayBuffer <$> overPtr (glGenBuffers 1)
 
@@ -31,6 +34,22 @@ bufferData drawType values = do
 
   return buffer
 
+
+bufferUniformData :: GLenum -> [GLfloat] -> IO UniformBuffer
+bufferUniformData drawType values = do
+
+  buffer <- newUniformBuffer
+
+  withUniformBuffer buffer $ do
+
+    let valuesSize = fromIntegral (sizeOf (undefined :: GLfloat) * length values)
+
+    withArray values $ 
+      \valuesPtr ->
+        glBufferData GL_UNIFORM_BUFFER valuesSize (castPtr valuesPtr) drawType
+
+  return buffer
+
 bufferSubData :: ArrayBuffer -> [GLfloat] -> IO ()
 bufferSubData buffer values = do
 
@@ -42,6 +61,16 @@ bufferSubData buffer values = do
       \valuesPtr ->
         glBufferSubData GL_ARRAY_BUFFER 0 valuesSize (castPtr valuesPtr)
 
+bufferUniformSubData :: UniformBuffer -> [GLfloat] -> IO ()
+bufferUniformSubData buffer values = do
+
+  withUniformBuffer buffer $ do
+
+    let valuesSize = fromIntegral (sizeOf (undefined :: GLfloat) * length values)
+
+    withArray values $ 
+      \valuesPtr ->
+        glBufferSubData GL_UNIFORM_BUFFER 0 valuesSize (castPtr valuesPtr)
 
 bufferElementData :: [GLuint] -> IO ElementArrayBuffer
 bufferElementData values  = do

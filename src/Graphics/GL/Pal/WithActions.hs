@@ -32,3 +32,13 @@ withElementArrayBuffer buffer action = do
   _ <- action
   
   glBindBuffer GL_ELEMENT_ARRAY_BUFFER 0
+
+
+withUniformBuffer :: MonadIO m => UniformBuffer -> m a -> m ()
+withUniformBuffer buffer action = do
+
+  glBindBuffer GL_UNIFORM_BUFFER (unUniformBuffer buffer)
+
+  _ <- action
+  
+  glBindBuffer GL_UNIFORM_BUFFER 0
