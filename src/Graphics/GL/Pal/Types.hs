@@ -24,6 +24,9 @@ newtype UniformBuffer       = UniformBuffer       { unUniformBuffer       :: GLu
 
 newtype TextureObject       = TextureObject       { unTextureObject       :: GLuint }
 
+newtype UniformBlockBindingPoint = UniformBlockBindingPoint { unUniformBlockBindingPoint :: GLuint }
+newtype UniformBlockIndex        = UniformBlockIndex        { unUniformBlockIndex        :: GLuint }
+
 -- A UniformLocation is tagged with the type of the uniform it applies to.
 newtype UniformLocation a = 
   UniformLocation { unUniformLocation :: GLint }

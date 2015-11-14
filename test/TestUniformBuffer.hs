@@ -5,7 +5,6 @@ import Halive.Utils
 import Control.Monad.Reader
 import Data.Time
 import Data.Foldable
-import Foreign.C.String
 import System.Random
 
 data Uniforms = Uniforms 
@@ -34,14 +33,11 @@ main = do
   offsetBuffer   <- bufferUniformData GL_DYNAMIC_DRAW (concatMap toList initialOffsets)
 
   -- Set up our UBO globally
-  let offsetInfoBindingPoint = 0
-  glBindBufferBase GL_UNIFORM_BUFFER offsetInfoBindingPoint (unUniformBuffer offsetBuffer)
+  let offsetsBindingPoint = UniformBlockBindingPoint 0
+  bindUniformBufferBase offsetBuffer offsetsBindingPoint
 
   -- Bind the shader's uniform buffer declaration to the correct uniform buffer object
-  let uniformBlockName = "offsetInfo"
-  shaderOffsetInfoBlockIndex <- withCString uniformBlockName $ \uniformBlockNameCString -> 
-    glGetUniformBlockIndex (unProgram shader) uniformBlockNameCString
-  glUniformBlockBinding (unProgram shader) shaderOffsetInfoBlockIndex offsetInfoBindingPoint
+  bindShaderUniformBuffer shader "offsets" offsetsBindingPoint
 
   -- withVAO (sVAO cubeShape) $ 
   --   withArrayBuffer offsetBuffer $ do

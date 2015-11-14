@@ -11,6 +11,13 @@ import Control.Monad.Trans
 newUniformBuffer :: MonadIO m => m UniformBuffer
 newUniformBuffer = UniformBuffer <$> overPtr (glGenBuffers 1)
 
+bindUniformBufferBase :: MonadIO m => UniformBuffer -> UniformBlockBindingPoint -> m ()
+bindUniformBufferBase buffer bindingPoint = 
+  glBindBufferBase GL_UNIFORM_BUFFER 
+    (unUniformBlockBindingPoint bindingPoint) 
+    (unUniformBuffer buffer)
+
+
 newArrayBuffer :: MonadIO m => m ArrayBuffer
 newArrayBuffer = ArrayBuffer <$> overPtr (glGenBuffers 1)
 

@@ -127,6 +127,20 @@ getShaderUniform (Program prog) uniformName = liftIO $ do
 
   return (UniformLocation location)
 
+getUniformBlockIndex :: MonadIO m => Program -> String -> m UniformBlockIndex
+getUniformBlockIndex shader uniformBlockName = fmap UniformBlockIndex $ liftIO $
+  withCString uniformBlockName $
+    glGetUniformBlockIndex (unProgram shader)
+
+bindShaderUniformBuffer :: MonadIO m => Program -> String -> UniformBlockBindingPoint -> m ()
+bindShaderUniformBuffer shader uniformBlockName bindingPoint = do
+  uniformBlockIndex <- getUniformBlockIndex shader uniformBlockName
+  glUniformBlockBinding 
+    (unProgram shader) 
+    (unUniformBlockIndex uniformBlockIndex) 
+    (unUniformBlockBindingPoint bindingPoint)
+
+
 glGetErrors :: IO ()
 glGetErrors = do
 

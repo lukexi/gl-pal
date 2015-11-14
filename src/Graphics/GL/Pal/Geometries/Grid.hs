@@ -19,9 +19,9 @@ gridData :: V3 GLfloat -> V3 Int -> GeometryData
 gridData  size subdivisions = GeometryData{..}
   
   where
-    subX = fromIntegral (subdivisions ^. _x)
-    subY = fromIntegral (subdivisions ^. _y)
-    subZ = fromIntegral (subdivisions ^. _z)
+    subX = subdivisions ^. _x
+    subY = subdivisions ^. _y
+    subZ = subdivisions ^. _z
 
     subX' = fromIntegral (subdivisions ^. _x)
     subY' = fromIntegral (subdivisions ^. _y)
@@ -147,7 +147,7 @@ makeGridUVs :: GLuint -> [ GLfloat ]
 makeGridUVs numVerts = positions
   where
     positions = concatMap getPoint [0..numVerts]
-    getPoint i = toList p
+    getPoint _ = toList p
       where
         p = V2 0 0
 

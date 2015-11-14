@@ -12,6 +12,7 @@ import System.FilePath
 import Graphics.GL.Pal.Shader
 import Graphics.GL.Pal.Types
 
+fileNameModified :: [FilePath] -> Event -> Bool
 fileNameModified fileNames event = case event of
     Modified path _ -> takeFileName path `elem` fileNames
     _               -> False
