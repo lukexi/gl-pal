@@ -6,14 +6,13 @@ import Control.Monad.Reader
 import Data.Time
 import Data.Foldable
 
-import System.Random
+-- import System.Random
 
 data Uniforms = Uniforms 
   { uMVP :: UniformLocation (M44 GLfloat)
   } deriving Data
 
-randomOffsets :: (Integral a, Fractional b, Floating b, Random b) 
-              => a -> b -> IO [V3 b]
+randomOffsets :: GLsizei -> GLfloat -> IO [V3 GLfloat]
 randomOffsets instanceCount t = forM [0..instanceCount-1] $ \i -> do
   let x = fromIntegral $ (i `div` 100) - 50
       y = fromIntegral $ (i `mod` 100) - 50
@@ -32,10 +31,15 @@ main = do
 
   initialOffsets <- randomOffsets numInstances 0
   offsetBuffer   <- bufferData GL_DYNAMIC_DRAW (concatMap toList initialOffsets)
-  withVAO (sVAO cubeShape) $ 
+  iBuffer        <- bufferData GL_DYNAMIC_DRAW (replicate (fromIntegral numInstances) 5 :: [GLint])
+  withVAO (sVAO cubeShape) $ do
     withArrayBuffer offsetBuffer $ do
       attribute <- getShaderAttribute (sProgram cubeShape) "aInstanceOffset"
-      assignAttribute (sProgram cubeShape) "aInstanceOffset" GL_FLOAT 3
+      assignFloatAttribute (sProgram cubeShape) "aInstanceOffset" GL_FLOAT 3
+      vertexAttribDivisor attribute 1
+    withArrayBuffer iBuffer $ do
+      attribute <- getShaderAttribute (sProgram cubeShape) "aInstanceI"
+      assignIntegerAttribute (sProgram cubeShape) "aInstanceI" GL_INT 1
       vertexAttribDivisor attribute 1
 
   glEnable GL_DEPTH_TEST
@@ -55,6 +59,7 @@ main = do
 
     newOffsets <- randomOffsets numInstances t
     bufferSubData offsetBuffer (concatMap toList newOffsets)
+    -- bufferSubData iBuffer (replicate (fromIntegral numInstances) 0 :: [GLint])
     
     let model = mkTransformation (axisAngle (V3 1 1 0) 0) (V3 0 1 0)
 
