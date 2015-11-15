@@ -41,29 +41,37 @@ createShaderProgramFromSources :: String -> Text -> String -> Text -> IO Program
 createShaderProgramFromSources vertexShaderName vertexShaderSource fragmentShaderName fragmentShaderSource = do 
   
   vertexShader <- glCreateShader GL_VERTEX_SHADER
-  compileShaderSource vertexShaderName vertexShaderSource vertexShader
+  _ <- compileShaderSource vertexShaderName vertexShaderSource vertexShader
 
   fragmentShader <- glCreateShader GL_FRAGMENT_SHADER
-  compileShaderSource fragmentShaderName fragmentShaderSource fragmentShader
+  _ <- compileShaderSource fragmentShaderName fragmentShaderSource fragmentShader
 
-  attachProgram vertexShader fragmentShader
-
-
+  fst <$> attachProgram vertexShader fragmentShader
 
 createShaderProgram :: FilePath -> FilePath -> IO Program
-createShaderProgram vertexShaderPath fragmentShaderPath = do 
+createShaderProgram vp fp = fst <$> createShaderProgram' vp fp
+
+createShaderProgram' :: FilePath -> FilePath -> IO (Program, String)
+createShaderProgram' vertexPath fragmentPath = do 
   
   vertexShader <- glCreateShader GL_VERTEX_SHADER
-  compileShaderAtPath vertexShaderPath vertexShader
+  vertexResult <- compileShaderAtPath vertexPath vertexShader
 
   fragmentShader <- glCreateShader GL_FRAGMENT_SHADER
-  compileShaderAtPath fragmentShaderPath fragmentShader
+  fragmentResult <- compileShaderAtPath fragmentPath fragmentShader
 
-  attachProgram vertexShader fragmentShader
+  (program, linkResult) <- attachProgram vertexShader fragmentShader
+
+  let results = unlines . concat $
+        [ if null vertexResult   then [] else [vertexPath, vertexResult]
+        , if null fragmentResult then [] else [fragmentPath, fragmentResult]
+        , if null linkResult     then [] else [vertexPath ++ " and/or " ++ fragmentPath, linkResult]
+        ]
+  return (program, results)
 
 
 
-attachProgram :: GLuint -> GLuint -> IO Program
+attachProgram :: GLuint -> GLuint -> IO (Program, String)
 attachProgram vertexShader fragmentShader = do
 
   prog <- glCreateProgram
@@ -73,21 +81,21 @@ attachProgram vertexShader fragmentShader = do
 
   glLinkProgram prog
 
-  checkLinkStatus prog
+  linkResult <- checkLinkStatus prog
   
-  return (Program prog)
+  return (Program prog, linkResult)
 
 
 
 
-compileShaderAtPath :: FilePath -> GLuint -> IO ()
+compileShaderAtPath :: FilePath -> GLuint -> IO String
 compileShaderAtPath path shader = do
 
   src <- Text.readFile path
 
   compileShaderSource path src shader 
 
-compileShaderSource :: String -> Text -> GLuint -> IO ()
+compileShaderSource :: String -> Text -> GLuint -> IO String
 compileShaderSource path src shader = do
   
   BS.useAsCString (Text.encodeUtf8 src) $ \ptr ->
@@ -158,7 +166,7 @@ glGetErrors = do
         GL_INVALID_VALUE                  -> putStrLn "* Invalid Value"
         GL_INVALID_OPERATION              -> putStrLn "* Invalid Operation"
         GL_INVALID_FRAMEBUFFER_OPERATION  -> putStrLn "* Invalid Framebuffer Operation"
-        GL_OUT_OF_MEMORY                  -> putStrLn "* OOM"
+        GL_OUT_OF_MEMORY                  -> putStrLn "* Out of Memory"
         GL_STACK_UNDERFLOW                -> putStrLn "* Stack underflow"
         GL_STACK_OVERFLOW                 -> putStrLn "* Stack overflow"
 
@@ -172,43 +180,45 @@ glGetErrors = do
 
 
 
-checkLinkStatus :: GLuint -> IO ()
+checkLinkStatus :: GLuint -> IO String
 checkLinkStatus prog = do
 
   linked <- overPtr (glGetProgramiv prog GL_LINK_STATUS)
 
-  when (linked == GL_FALSE) $ do
+  if linked == GL_FALSE
+    then do
+      maxLength <- overPtr (glGetProgramiv prog GL_INFO_LOG_LENGTH)
 
-    maxLength <- overPtr (glGetProgramiv prog GL_INFO_LOG_LENGTH)
+      logLines <- allocaArray (fromIntegral maxLength) $ \p ->
+                  alloca $ \lenP -> do
 
-    logLines <- allocaArray (fromIntegral maxLength) $ \p ->
+                    glGetProgramInfoLog prog maxLength lenP p
+                    len <- peek lenP
+                    peekCStringLen (p, fromIntegral len)
 
-            alloca $ \lenP -> do
-
-              glGetProgramInfoLog prog maxLength lenP p
-              len <- peek lenP
-              peekCStringLen (p, fromIntegral len)
-
-    putStrLn logLines
+      putStrLn logLines
+      return logLines
+    else return ""
 
 
-checkCompileStatus :: String -> GLuint -> IO ()
+checkCompileStatus :: String -> GLuint -> IO String
 checkCompileStatus path shader = do
 
   compiled <- overPtr (glGetShaderiv shader GL_COMPILE_STATUS)
 
-  when (compiled == GL_FALSE) $ do
+  if compiled == GL_FALSE 
+    then do
+      maxLength <- overPtr (glGetShaderiv shader GL_INFO_LOG_LENGTH)
 
-    maxLength <- overPtr (glGetShaderiv shader GL_INFO_LOG_LENGTH)
+      logLines <- allocaArray (fromIntegral maxLength) $ \p ->
+                  alloca $ \lenP -> do 
 
-    logLines <- allocaArray (fromIntegral maxLength) $ \p ->
+                    glGetShaderInfoLog shader maxLength lenP p
+                    len <- peek lenP
+                    peekCStringLen (p, fromIntegral len)
 
-            alloca $ \lenP -> do 
-
-              glGetShaderInfoLog shader maxLength lenP p
-              len <- peek lenP
-              peekCStringLen (p, fromIntegral len)
-
-    putStrLn ("In " ++ path ++ ":")
-    
-    putStrLn logLines
+      putStrLn ("In " ++ path ++ ":")
+      
+      putStrLn logLines
+      return logLines
+    else return ""
