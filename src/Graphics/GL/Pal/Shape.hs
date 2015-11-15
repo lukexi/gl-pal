@@ -29,10 +29,10 @@ makeShape sGeometry@Geometry{..} sProgram = do
 
   withVAO sVAO $ do
 
-    withArrayBuffer geoPositions $ assignAttribute sProgram "aPosition" 3 
-    withArrayBuffer geoNormals   $ assignAttribute sProgram "aNormal"   3 
-    withArrayBuffer geoTangents  $ assignAttribute sProgram "aTangent"  3
-    withArrayBuffer geoUVs       $ assignAttribute sProgram "aUV"       2 
+    withArrayBuffer geoPositions $ assignAttribute sProgram "aPosition" GL_FLOAT 3 
+    withArrayBuffer geoNormals   $ assignAttribute sProgram "aNormal"   GL_FLOAT 3 
+    withArrayBuffer geoTangents  $ assignAttribute sProgram "aTangent"  GL_FLOAT 3
+    withArrayBuffer geoUVs       $ assignAttribute sProgram "aUV"       GL_FLOAT 2 
 
     bindElementArrayBuffer geoIndices
 

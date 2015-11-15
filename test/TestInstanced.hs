@@ -35,8 +35,8 @@ main = do
   withVAO (sVAO cubeShape) $ 
     withArrayBuffer offsetBuffer $ do
       attribute <- getShaderAttribute (sProgram cubeShape) "aInstanceOffset"
-      assignAttribute (sProgram cubeShape) "aInstanceOffset" 3
-      glVertexAttribDivisor (fromIntegral (unAttributeLocation attribute)) 1
+      assignAttribute (sProgram cubeShape) "aInstanceOffset" GL_FLOAT 3
+      vertexAttribDivisor attribute 1
 
   glEnable GL_DEPTH_TEST
   glClearColor 0.0 0.0 0.1 1

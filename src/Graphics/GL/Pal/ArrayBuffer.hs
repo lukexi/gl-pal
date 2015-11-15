@@ -1,3 +1,4 @@
+{-# LANGUAGE ScopedTypeVariables #-}
 module Graphics.GL.Pal.ArrayBuffer where
 
 import Foreign
@@ -26,14 +27,14 @@ newElementArrayBuffer = ElementArrayBuffer <$> overPtr (glGenBuffers 1)
 
 -- | Buffers a list of floats using the given draw hint, e.g. GL_STATIC_DRAW
 -- and returns a reference to the ArrayBuffer where the data is stored
-bufferData :: MonadIO m => GLenum -> [GLfloat] -> m ArrayBuffer
+bufferData :: forall a m. (Storable a, MonadIO m) => GLenum -> [a] -> m ArrayBuffer
 bufferData drawType values = do
 
   buffer <- newArrayBuffer
 
   withArrayBuffer buffer $ do
 
-    let valuesSize = fromIntegral (sizeOf (undefined :: GLfloat) * length values)
+    let valuesSize = fromIntegral (sizeOf (undefined :: a) * length values)
 
     liftIO . withArray values $ 
       \valuesPtr ->
@@ -42,14 +43,14 @@ bufferData drawType values = do
   return buffer
 
 
-bufferUniformData :: MonadIO m => GLenum -> [GLfloat] -> m UniformBuffer
+bufferUniformData :: forall a m. (Storable a, MonadIO m) => GLenum -> [a] -> m UniformBuffer
 bufferUniformData drawType values = do
 
   buffer <- newUniformBuffer
 
   withUniformBuffer buffer $ do
 
-    let valuesSize = fromIntegral (sizeOf (undefined :: GLfloat) * length values)
+    let valuesSize = fromIntegral (sizeOf (undefined :: a) * length values)
 
     liftIO . withArray values $ 
       \valuesPtr ->
@@ -57,23 +58,23 @@ bufferUniformData drawType values = do
 
   return buffer
 
-bufferSubData :: MonadIO m => ArrayBuffer -> [GLfloat] -> m ()
+bufferSubData :: forall a m. (Storable a, MonadIO m) => ArrayBuffer -> [a] -> m ()
 bufferSubData buffer values = do
 
   withArrayBuffer buffer $ do
 
-    let valuesSize = fromIntegral (sizeOf (undefined :: GLfloat) * length values)
+    let valuesSize = fromIntegral (sizeOf (undefined :: a) * length values)
 
     liftIO . withArray values $ 
       \valuesPtr ->
         glBufferSubData GL_ARRAY_BUFFER 0 valuesSize (castPtr valuesPtr)
 
-bufferUniformSubData :: MonadIO m => UniformBuffer -> [GLfloat] -> m ()
+bufferUniformSubData :: forall a m. (Storable a, MonadIO m) => UniformBuffer -> [a] -> m ()
 bufferUniformSubData buffer values = do
 
   withUniformBuffer buffer $ do
 
-    let valuesSize = fromIntegral (sizeOf (undefined :: GLfloat) * length values)
+    let valuesSize = fromIntegral (sizeOf (undefined :: a) * length values)
 
     liftIO . withArray values $ 
       \valuesPtr ->

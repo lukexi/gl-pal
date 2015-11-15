@@ -77,8 +77,8 @@ makeLine shader = do
 
   vao <- newVAO
   withVAO vao $ do
-    withArrayBuffer positionsBuffer $ assignAttribute shader "aPosition" 3
-    withArrayBuffer normalsBuffer $ assignAttribute shader "aNormal" 3
+    withArrayBuffer positionsBuffer $ assignAttribute shader "aPosition" GL_FLOAT 3
+    withArrayBuffer normalsBuffer   $ assignAttribute shader "aNormal"   GL_FLOAT 3
 
   return (vao, positionsBuffer, fromIntegral vertCount)
 
