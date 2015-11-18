@@ -12,20 +12,20 @@ import Debug.Trace
 -- | For texture data
 data ColorSpace = SRGB | Linear
 
-newtype Program             = Program             { unProgram             :: GLuint }
+newtype Program             = Program             { unProgram             :: GLuint } deriving Show
 
-newtype AttributeLocation   = AttributeLocation   { unAttributeLocation   :: GLint  }
-newtype TextureID           = TextureID           { unTextureID           :: GLuint }
+newtype AttributeLocation   = AttributeLocation   { unAttributeLocation   :: GLint  } deriving Show
+newtype TextureID           = TextureID           { unTextureID           :: GLuint } deriving Show
 
-newtype VertexArrayObject   = VertexArrayObject   { unVertexArrayObject   :: GLuint }
-newtype ArrayBuffer         = ArrayBuffer         { unArrayBuffer         :: GLuint }
-newtype ElementArrayBuffer  = ElementArrayBuffer  { unElementArrayBuffer  :: GLuint }
-newtype UniformBuffer       = UniformBuffer       { unUniformBuffer       :: GLuint }
+newtype VertexArrayObject   = VertexArrayObject   { unVertexArrayObject   :: GLuint } deriving Show
+newtype ArrayBuffer         = ArrayBuffer         { unArrayBuffer         :: GLuint } deriving Show
+newtype ElementArrayBuffer  = ElementArrayBuffer  { unElementArrayBuffer  :: GLuint } deriving Show
+newtype UniformBuffer       = UniformBuffer       { unUniformBuffer       :: GLuint } deriving Show
 
-newtype TextureObject       = TextureObject       { unTextureObject       :: GLuint }
+newtype TextureObject       = TextureObject       { unTextureObject       :: GLuint } deriving Show
 
-newtype UniformBlockBindingPoint = UniformBlockBindingPoint { unUniformBlockBindingPoint :: GLuint }
-newtype UniformBlockIndex        = UniformBlockIndex        { unUniformBlockIndex        :: GLuint }
+newtype UniformBlockBindingPoint = UniformBlockBindingPoint { unUniformBlockBindingPoint :: GLuint } deriving Show
+newtype UniformBlockIndex        = UniformBlockIndex        { unUniformBlockIndex        :: GLuint } deriving Show
 
 -- A UniformLocation is tagged with the type of the uniform it applies to.
 newtype UniformLocation a = 
