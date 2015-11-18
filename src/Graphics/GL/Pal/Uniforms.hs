@@ -44,8 +44,8 @@ uniformV4V uniform array = liftIO $ do
   let uniformLoc = unUniformLocation uniform
       finalArray = concatMap toList array
 
-  withArrayLen finalArray $ \count ptr ->
-      glUniform4fv uniformLoc (fromIntegral count) ptr
+  withArray finalArray $ \ptr ->
+      glUniform4fv uniformLoc (fromIntegral (length array)) ptr
 
 uniformV3V :: MonadIO m => UniformLocation [V3 GLfloat] -> [V3 GLfloat] -> m ()
 uniformV3V uniform array = liftIO $ do
@@ -53,8 +53,8 @@ uniformV3V uniform array = liftIO $ do
   let uniformLoc = unUniformLocation uniform
       finalArray = concatMap toList array
 
-  withArrayLen finalArray $ \count ptr ->
-      glUniform3fv uniformLoc (fromIntegral count) ptr
+  withArray finalArray $ \ ptr ->
+      glUniform3fv uniformLoc (fromIntegral (length array)) ptr
 
 uniformV2V :: MonadIO m => UniformLocation [V2 GLfloat] -> [V2 GLfloat] -> m ()
 uniformV2V uniform array = liftIO $ do
@@ -62,8 +62,8 @@ uniformV2V uniform array = liftIO $ do
   let uniformLoc = unUniformLocation uniform
       finalArray = concatMap toList array
 
-  withArrayLen finalArray $ \count ptr ->
-      glUniform2fv uniformLoc (fromIntegral count) ptr
+  withArray finalArray $ \ptr ->
+      glUniform2fv uniformLoc (fromIntegral (length array)) ptr
 
 
 uniformM44 :: MonadIO m => UniformLocation (M44 GLfloat) -> M44 GLfloat -> m ()

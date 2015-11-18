@@ -5,7 +5,7 @@ import Graphics.GL.Pal.Types
 import Graphics.GL
 -- import Graphics.GL.Ext.ARB.ShadingLanguageInclude
 
-import Control.Monad
+-- import Control.Monad
 import Control.Monad.Trans
 
 import Foreign
