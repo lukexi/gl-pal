@@ -36,6 +36,7 @@ library
     Graphics.GL.Pal.Types
     Graphics.GL.Pal.Uniforms
     Graphics.GL.Pal.WithActions
+    Graphics.GL.Pal.Utility
     Data.Colour.Extra
   build-depends:       
       base
@@ -52,6 +53,7 @@ library
     , fsnotify
     , filepath
     , stm
+    , time
   default-language:    Haskell2010
 
 test-suite geo

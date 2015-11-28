@@ -23,6 +23,7 @@ import Graphics.GL.Pal.InferUniforms          as Exports
 import Graphics.GL.Pal.Framebuffer            as Exports
 
 import Graphics.GL.Pal.Reshader               as Exports
+import Graphics.GL.Pal.Utility                as Exports
 
 import Linear.Extra                           as Exports
 import Data.Colour.Extra                      as Exports
