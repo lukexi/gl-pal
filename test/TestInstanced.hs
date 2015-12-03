@@ -24,8 +24,8 @@ main = do
 
   shader        <- createShaderProgram "test/geoInstanced.vert" "test/geo.frag"
 
-  cubeGeo    <- cubeGeometry 0.5 1
-  cubeShape  <- makeShape cubeGeo shader
+  cubeGeo       <- cubeGeometry 0.5 1
+  cubeShape     <- makeShape cubeGeo shader
 
   let numInstances = 10000
 
@@ -33,14 +33,11 @@ main = do
   offsetBuffer   <- bufferData GL_DYNAMIC_DRAW (concatMap toList initialOffsets)
   iBuffer        <- bufferData GL_DYNAMIC_DRAW (replicate (fromIntegral numInstances) 5 :: [GLint])
   withVAO (sVAO cubeShape) $ do
-    withArrayBuffer offsetBuffer $ do
-      attribute <- getShaderAttribute (sProgram cubeShape) "aInstanceOffset"
-      assignFloatAttribute (sProgram cubeShape) "aInstanceOffset" GL_FLOAT 3
-      vertexAttribDivisor attribute 1
-    withArrayBuffer iBuffer $ do
-      attribute <- getShaderAttribute (sProgram cubeShape) "aInstanceI"
-      assignIntegerAttribute (sProgram cubeShape) "aInstanceI" GL_INT 1
-      vertexAttribDivisor attribute 1
+    withArrayBuffer offsetBuffer $ 
+      assignFloatAttributeInstanced program "aInstanceOffset " GL_FLOAT 3
+    withArrayBuffer iBuffer $
+      assignIntegerAttributeInstanced program "aInstanceI"     GL_INT   1
+
 
   glEnable GL_DEPTH_TEST
   glClearColor 0.0 0.0 0.1 1

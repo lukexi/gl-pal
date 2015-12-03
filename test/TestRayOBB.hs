@@ -22,15 +22,15 @@ main = do
   icoGeo     <- icosahedronGeometry 0.5 5
   icoShape   <- makeShape icoGeo shader
 
-  cubeGeo    <- cubeGeometry 1 5
+  cubeGeo    <- cubeGeometry (V3 6 1 1) 5
   cubeShape  <- (makeShape cubeGeo shader :: IO (Shape Uniforms))
   
   planeGeo   <- planeGeometry 1 (V3 0 0 1) (V3 0 1 0) 5
   planeShape <- makeShape planeGeo shader
 
-  let shapes = [ (cubeShape, V3 (-1) 0 0)
-               , (icoShape , V3 1 0 0)
-               , (planeShape, V3 0 (-1) 0)
+  let shapes = [ (cubeShape,  V3 (-1) 0 0, (V3 (-3) (-0.5) (-0.5)  , V3 3 0.5 0.5))
+               , (icoShape ,  V3 1 0 0   , (V3 (-0.5) (-0.5) (-0.5), V3 0.5 0.5 0.5))
+               , (planeShape, V3 0 (-1) 0, (V3 (-0.5) (-0.5) 0     , V3 0.5 0.5 0))
                ]
 
   (lineVAO, lineBuffer, lineVertCount) <- makeLine shader
@@ -38,32 +38,39 @@ main = do
   glEnable GL_DEPTH_TEST
 
   whileWindow win $ do
-    projection <- getWindowProjection win 45 0.1 1000
-    let view = viewMatrix (V3 0 0 5) (axisAngle (V3 0 1 0) 0)
+    proj44 <- getWindowProjection win 45 0.1 1000
+    let pose = Pose (V3 0 0 5) (axisAngle (V3 0 1 0) 0)
+        view44 = viewMatrixFromPose pose
     (x,y,w,h) <- getWindowViewport win
     glViewport x y w h
-    
-    processEvents events $ closeOnEscape win
 
     t <- realToFrac . utctDayTime <$> getCurrentTime
+
+    processEvents events $ \e -> do
+      closeOnEscape win e
+      onMouseDown e $ \_ -> do
+        ray <- cursorPosToWorldRay win proj44 pose
+        forM_ (zip ["cube", "sphere", "plane"] shapes) $ \(name, (_shape, pos, aabb)) -> do
+          let model44 = mkTransformation (axisAngle (V3 0 1 0) (pi/2)) pos
+              intersection = rayOBBIntersection ray aabb model44
+          putStrLn $ name ++ ": " ++ show intersection
+        putStrLn ""
 
     glClearColor 0.0 0.0 0.1 1
     glClear (GL_COLOR_BUFFER_BIT .|. GL_DEPTH_BUFFER_BIT)
 
-    
-
-    forM_ shapes $ \(shape, pos) -> 
+    forM_ shapes $ \(shape, pos, _aabb) -> 
       withShape shape $ do
-        let model = mkTransformation (axisAngle (V3 1 1 0) t) pos
-        uniformM44 uMVP (projection !*! view !*! model)
+        let model44 = mkTransformation (axisAngle (V3 0 1 0) (pi/2)) pos
+        uniformM44 uMVP (proj44 !*! view44 !*! model44)
         drawShape
 
     newVerts <- randomVerts lineVertCount
     bufferSubData lineBuffer (concatMap toList newVerts)
     
 
-    let model = mkTransformation (axisAngle (V3 1 1 0) 0) (V3 0 1 0)
-    uniformM44 uMVP (projection !*! view !*! model)
+    let model44 = mkTransformation (axisAngle (V3 0 1 0) 0) (V3 0 1 0)
+    uniformM44 uMVP (proj44 !*! view44 !*! model44)
     withVAO lineVAO $ 
       glDrawArrays GL_LINE_STRIP 0 lineVertCount
 
@@ -72,9 +79,9 @@ main = do
 makeLine :: Program -> IO (VertexArrayObject, ArrayBuffer, GLsizei)
 makeLine shader = do
 
-  let verts = map (\x -> V3 x 0 0) [-1,-0.95..1]
+  let verts = map (\x -> V3 x 0 0) [-1,-0.95..1] :: [V3 GLfloat]
       vertCount = length verts
-      normals = replicate vertCount (V3 0 0 1)
+      normals = replicate vertCount (V3 0 0 1)   :: [V3 GLfloat]
   
   positionsBuffer <- bufferData GL_DYNAMIC_DRAW (concatMap toList verts)
   normalsBuffer   <- bufferData GL_STATIC_DRAW (concatMap toList normals)
@@ -86,8 +93,8 @@ makeLine shader = do
 
   return (vao, positionsBuffer, fromIntegral vertCount)
 
-randomVerts :: (Integral a, Fractional b, Random b) 
-            => a -> IO [V3 b]
+randomVerts :: (Integral a) 
+            => a -> IO [V3 GLfloat]
 randomVerts lineVertCount = forM [0..lineVertCount-1] $ \i -> do
   let x = fromIntegral i / fromIntegral lineVertCount
       x' = x * 2 - 1
