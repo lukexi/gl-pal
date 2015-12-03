@@ -22,13 +22,13 @@ main = do
   icoGeo     <- icosahedronGeometry 0.5 5
   icoShape   <- makeShape icoGeo shader
 
-  cubeGeo    <- cubeGeometry (V3 6 1 1) 5
+  cubeGeo    <- cubeGeometry (V3 2 1 1) 5
   cubeShape  <- (makeShape cubeGeo shader :: IO (Shape Uniforms))
   
   planeGeo   <- planeGeometry 1 (V3 0 0 1) (V3 0 1 0) 5
   planeShape <- makeShape planeGeo shader
 
-  let shapes = [ (cubeShape,  V3 (-1) 0 0, (V3 (-3) (-0.5) (-0.5)  , V3 3 0.5 0.5))
+  let shapes = [ (cubeShape,  V3 (-1) 0 0, (V3 (-1)   (-0.5) (-0.5), V3 3 0.5 0.5))
                , (icoShape ,  V3 1 0 0   , (V3 (-0.5) (-0.5) (-0.5), V3 0.5 0.5 0.5))
                , (planeShape, V3 0 (-1) 0, (V3 (-0.5) (-0.5) 0     , V3 0.5 0.5 0))
                ]
@@ -51,7 +51,7 @@ main = do
       onMouseDown e $ \_ -> do
         ray <- cursorPosToWorldRay win proj44 pose
         forM_ (zip ["cube", "sphere", "plane"] shapes) $ \(name, (_shape, pos, aabb)) -> do
-          let model44 = mkTransformation (axisAngle (V3 0 1 0) (pi/2)) pos
+          let model44 = mkTransformation (axisAngle (V3 0 1 0) (pi/4)) pos
               intersection = rayOBBIntersection ray aabb model44
           putStrLn $ name ++ ": " ++ show intersection
         putStrLn ""
@@ -61,7 +61,7 @@ main = do
 
     forM_ shapes $ \(shape, pos, _aabb) -> 
       withShape shape $ do
-        let model44 = mkTransformation (axisAngle (V3 0 1 0) (pi/2)) pos
+        let model44 = mkTransformation (axisAngle (V3 0 1 0) (pi/4)) pos
         uniformM44 uMVP (proj44 !*! view44 !*! model44)
         drawShape
 
