@@ -10,20 +10,20 @@ import Control.Monad
 integerTypes :: [GLenum]
 integerTypes = [GL_BYTE, GL_UNSIGNED_BYTE, GL_SHORT, GL_UNSIGNED_SHORT, GL_INT, GL_UNSIGNED_SHORT]
 
-enableVertexAttribArray :: AttributeLocation -> IO ()
+enableVertexAttribArray :: MonadIO m => AttributeLocation -> m ()
 enableVertexAttribArray = glEnableVertexAttribArray . fromIntegral . unAttributeLocation
 
-assignFloatAttribute :: Program -> String -> GLenum -> GLint -> IO ()
+assignFloatAttribute :: MonadIO m => Program -> String -> GLenum -> GLint -> m ()
 assignFloatAttribute = assignFloatAttribute' False
 
-assignFloatAttributeInstanced :: Program -> String -> GLenum -> GLint -> IO ()
+assignFloatAttributeInstanced :: MonadIO m => Program -> String -> GLenum -> GLint -> m ()
 assignFloatAttributeInstanced = assignFloatAttribute' True
 
-assignFloatAttribute' :: Bool -> Program -> String -> GLenum -> GLint -> IO ()
+assignFloatAttribute' :: MonadIO m => Bool -> Program -> String -> GLenum -> GLint -> m ()
 assignFloatAttribute' instanced prog attributeName attributeType attributeLength = do
 
   when (attributeType `elem` integerTypes) $ 
-    putStrLn $ "WARNING: Passed integer type " ++ show attributeType ++ " to assignFloatAttribute."
+    liftIO . putStrLn $ "WARNING: Passed integer type " ++ show attributeType ++ " to assignFloatAttribute."
 
   -- Gets the attribute for the program we have passed in
   attribute <- getShaderAttribute prog attributeName
@@ -43,17 +43,17 @@ assignFloatAttribute' instanced prog attributeName attributeType attributeLength
     vertexAttribDivisor attribute 1
 
 
-assignIntegerAttribute :: Program -> String -> GLenum -> GLint -> IO ()
+assignIntegerAttribute :: MonadIO m => Program -> String -> GLenum -> GLint -> m ()
 assignIntegerAttribute = assignIntegerAttribute' False
 
-assignIntegerAttributeInstanced :: Program -> String -> GLenum -> GLint -> IO ()
+assignIntegerAttributeInstanced :: MonadIO m => Program -> String -> GLenum -> GLint -> m ()
 assignIntegerAttributeInstanced = assignIntegerAttribute' True
 
-assignIntegerAttribute' :: Bool -> Program -> String -> GLenum -> GLint -> IO ()
+assignIntegerAttribute' :: MonadIO m => Bool -> Program -> String -> GLenum -> GLint -> m ()
 assignIntegerAttribute' instanced prog attributeName attributeType attributeLength = do
 
   when (not $ attributeType `elem` integerTypes) $ 
-    putStrLn $ "WARNING: Passed non-integer type " ++ show attributeType ++ " to assignIntegerAttribute."
+    liftIO . putStrLn $ "WARNING: Passed non-integer type " ++ show attributeType ++ " to assignIntegerAttribute."
 
   -- Gets the attribute for the program we have passed in
   attribute <- getShaderAttribute prog attributeName

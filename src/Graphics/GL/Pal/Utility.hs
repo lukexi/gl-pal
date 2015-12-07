@@ -1,8 +1,6 @@
 module Graphics.GL.Pal.Utility where
 import Control.Monad.Trans
 import Control.Monad
-import System.CPUTime
-import Text.Printf
 import Data.Time
 
 putStrLnIO :: MonadIO m => String -> m ()
