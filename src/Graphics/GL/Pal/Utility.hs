@@ -1,6 +1,7 @@
 module Graphics.GL.Pal.Utility where
 import Control.Monad.Trans
 import Control.Monad
+import Data.Time.Clock.POSIX
 import Data.Time
 
 putStrLnIO :: MonadIO m => String -> m ()
@@ -32,3 +33,6 @@ profile name indent action = do
   when (diff > 0) $ 
     liftIO $ putStrLn (tabs ++ name ++ " Computation time: " ++ show diff)
   return x
+
+getNow :: (Fractional a, MonadIO m) => m a
+getNow = realToFrac <$> liftIO getPOSIXTime
