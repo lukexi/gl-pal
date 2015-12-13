@@ -28,6 +28,7 @@ profile name indent action = do
   after <- liftIO getCurrentTime
   let diff = after `diffUTCTime` before
       tabs = replicate indent '\t'
-  when (diff > 1/180) $ 
+  -- when (diff > 1/180) $ 
+  when (diff > 0) $ 
     liftIO $ putStrLn (tabs ++ name ++ " Computation time: " ++ show diff)
   return x
