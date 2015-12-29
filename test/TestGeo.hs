@@ -36,6 +36,7 @@ main = do
   (lineVAO, lineBuffer, lineVertCount) <- makeLine shader
 
   glEnable GL_DEPTH_TEST
+  glClearColor 0.0 0.0 0.1 1
 
   whileWindow win $ do
     projection <- getWindowProjection win 45 0.1 1000
@@ -47,7 +48,6 @@ main = do
 
     t <- realToFrac . utctDayTime <$> getCurrentTime
 
-    glClearColor 0.0 0.0 0.1 1
     glClear (GL_COLOR_BUFFER_BIT .|. GL_DEPTH_BUFFER_BIT)
 
     
@@ -59,7 +59,7 @@ main = do
         drawShape
 
     newVerts <- randomVerts lineVertCount
-    bufferSubData lineBuffer (concatMap toList newVerts)
+    bufferSubData lineBuffer (concatMap toList newVerts :: [GLfloat])
     
 
     let model = mkTransformation (axisAngle (V3 1 1 0) 0) (V3 0 1 0)
@@ -76,8 +76,8 @@ makeLine shader = do
       vertCount = length verts
       normals = replicate vertCount (V3 0 0 1)
   
-  positionsBuffer <- bufferData GL_DYNAMIC_DRAW (concatMap toList verts)
-  normalsBuffer   <- bufferData GL_STATIC_DRAW (concatMap toList normals)
+  positionsBuffer <- bufferData GL_DYNAMIC_DRAW (concatMap toList verts :: [GLfloat])
+  normalsBuffer   <- bufferData GL_STATIC_DRAW (concatMap toList normals :: [GLfloat])
 
   vao <- newVAO
   withVAO vao $ do
