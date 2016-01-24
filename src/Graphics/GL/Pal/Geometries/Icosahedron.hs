@@ -7,14 +7,10 @@ import Graphics.GL
 import Graphics.GL.Pal.Types
 import Graphics.GL.Pal.Geometry
 
-import Linear       hiding ( trace   )
-import Control.Lens hiding ( indices )
+import Linear       hiding (trace)
+import Control.Lens hiding (indices)
 import Data.Foldable
--- import Debug.Trace
 import Control.Arrow
-
---fI :: ( Integral a , Num b ) => a -> b
---fI = fromIntegral
 
 icosahedronData :: GLfloat  -> GLuint -> GeometryData
 icosahedronData size subdivisions = GeometryData{..}
@@ -68,22 +64,9 @@ makeIcosahedronUVs positionList = uvs
     where 
         uvs = concatMap getUV positionList
         getUV p = 
-            let u = ((azimuth p / 2) / pi) + 0.5
-                v = (inclination p / pi) + 0.5
+            let u = asin (p^._x)/pi + 0.5
+                v = asin (p^._y)/pi + 0.5
             in [u , 1 - v]
-
-azimuth :: (RealFloat a, R3 t) => t a -> a
-azimuth vec = atan2 (vec ^. _z) ((-vec ^. _x))
-
-inclination :: (RealFloat a, R3 t) => t a -> a
-inclination vec = 
-    atan2 
-        (-vec ^. _y) 
-        (sqrt (
-            ((vec ^. _x) ** (vec ^. _x)) + 
-            ((vec ^. _z) ** (vec ^. _z))
-            )
-        )
 
 makeIcosahedronTangents :: [V3 GLfloat] -> [ GLfloat ]
 makeIcosahedronTangents positionList = tangents
