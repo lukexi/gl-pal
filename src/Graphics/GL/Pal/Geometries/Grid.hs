@@ -7,13 +7,9 @@ import Graphics.GL
 import Graphics.GL.Pal.Types
 import Graphics.GL.Pal.Geometry
 
-import Linear       hiding ( trace   )
-import Control.Lens hiding ( indices )
+import Linear       hiding (trace)
+import Control.Lens hiding (indices)
 import Data.Foldable
--- import Debug.Trace
--- import Control.Arrow
-
-
 
 gridData :: V3 GLfloat -> V3 Int -> GeometryData
 gridData  size subdivisions = GeometryData{..}
@@ -46,7 +42,7 @@ gridData  size subdivisions = GeometryData{..}
 
 
 
-makeGridPositions :: GLfloat -> GLfloat -> GLfloat -> Int -> Int -> Int -> [ GLfloat ]
+makeGridPositions :: GLfloat -> GLfloat -> GLfloat -> Int -> Int -> Int -> [GLfloat]
 makeGridPositions xSize ySize zSize subX subY subZ = positions
 
   where
@@ -67,13 +63,13 @@ makeGridPositions xSize ySize zSize subX subY subZ = positions
     
 
     positions = concat
-                [ concat [ getPointZ (realToFrac x) (realToFrac y) | x <- [ 0 .. subX ] , y <- [ 0 .. subY ] ]
-                , concat [ getPointX (realToFrac y) (realToFrac z) | y <- [ 0 .. subY ] , z <- [ 0 .. subZ ] ]
-                , concat [ getPointY (realToFrac x) (realToFrac z) | x <- [ 0 .. subX ] , z <- [ 0 .. subZ ] ]
+                [ concat [getPointZ (realToFrac x) (realToFrac y) | x <- [0 .. subX] , y <- [0 .. subY]]
+                , concat [getPointX (realToFrac y) (realToFrac z) | y <- [0 .. subY] , z <- [0 .. subZ]]
+                , concat [getPointY (realToFrac x) (realToFrac z) | x <- [0 .. subX] , z <- [0 .. subZ]]
                 ]
 
     getPointZ :: V3 GLfloat -> V3 GLfloat -> [GLfloat]
-    getPointZ x y = concat [ toList pDo , toList pUp ]
+    getPointZ x y = concat [toList pDo , toList pUp]
       where 
 
         pUp = xVec * (x / xSubVec) * xSizeVec
@@ -89,7 +85,7 @@ makeGridPositions xSize ySize zSize subX subY subZ = positions
             - 0.5 * zVec * zSizeVec
 
     getPointY :: V3 GLfloat -> V3 GLfloat -> [GLfloat]
-    getPointY x z = concat [ toList pDo , toList pUp ]
+    getPointY x z = concat [toList pDo , toList pUp]
       where 
 
         pUp = xVec * (x / xSubVec) * xSizeVec
@@ -105,7 +101,7 @@ makeGridPositions xSize ySize zSize subX subY subZ = positions
             - 0.5 * yVec * ySizeVec
 
     getPointX :: V3 GLfloat -> V3 GLfloat -> [GLfloat]
-    getPointX y z = concat [ pDo , pUp ]
+    getPointX y z = concat [pDo , pUp]
       where 
 
         pUp = toList $    yVec * (y / ySubVec) * ySizeVec
@@ -121,13 +117,13 @@ makeGridPositions xSize ySize zSize subX subY subZ = positions
                         - 0.5 * xVec * xSizeVec
         
 
-makeGridIndicies :: GLuint -> [ GLuint ]
+makeGridIndicies :: GLuint -> [GLuint]
 makeGridIndicies numVerts = indices
   where
     indices = [0..numVerts]
 
 
-makeGridNormals :: GLuint -> [ GLfloat ]
+makeGridNormals :: GLuint -> [GLfloat]
 makeGridNormals numVerts = positions
   where
     positions = concatMap getPoint [0..numVerts]
@@ -135,7 +131,7 @@ makeGridNormals numVerts = positions
       where
         p = V3 0 1 0
 
-makeGridTangents :: GLuint -> [ GLfloat ]
+makeGridTangents :: GLuint -> [GLfloat]
 makeGridTangents numVerts = positions
   where
     positions = concatMap getPoint [0..numVerts]
@@ -143,7 +139,7 @@ makeGridTangents numVerts = positions
       where
         p = V3 0 0 1
 
-makeGridUVs :: GLuint -> [ GLfloat ]
+makeGridUVs :: GLuint -> [GLfloat]
 makeGridUVs numVerts = positions
   where
     positions = concatMap getPoint [0..numVerts]

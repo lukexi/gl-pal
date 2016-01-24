@@ -5,13 +5,12 @@ module Graphics.GL.Pal.Geometries.Plane where
 import Graphics.GL
 
 import Graphics.GL.Pal.Types
+import Graphics.GL.Pal.Utility
 import Graphics.GL.Pal.Geometry
 
 import Linear       hiding (trace  )
 import Control.Lens hiding (indices)
 import Data.Foldable
-
--- import Debug.Trace
 
 
 planeData :: V2 GLfloat -> V3 GLfloat -> V3 GLfloat -> V2 Int -> GeometryData
@@ -61,7 +60,7 @@ makePlaneUVs :: Int -> Int -> [GLfloat]
 makePlaneUVs subdivisionsX subdivisionsY = uvs
   where
 
-    uvs = concat [ getPoint x  y | x <- [ 0 .. subdivisionsX ] , y <- [ 0 .. subdivisionsY ] ]
+    uvs = concat [getPoint x y | x <- [0..subdivisionsX], y <- [0..subdivisionsY]]
     getPoint x y = toList p
       where 
         p = V2 (fI x  / fI subdivisionsX)  (fI y / fI subdivisionsY)
@@ -70,8 +69,8 @@ makePlaneUVs subdivisionsX subdivisionsY = uvs
 makePlaneIndices :: Int -> Int -> [GLuint]
 makePlaneIndices subdivisionsX subdivisionsY = map fI indices
   where
-    indices = concat [ getIndices x  y | x <- [ 0 .. subdivisionsX - 1 ] , y <- [ 0 .. subdivisionsY - 1 ] ]
-    getIndices x y = [ p1 , p3 , p2 , p2 , p3 , p4 ]
+    indices = concat [getIndices x y | x <- [0..subdivisionsX - 1], y <- [0..subdivisionsY - 1]]
+    getIndices x y = [p1, p3, p2, p2, p3, p4]
       where 
 
         p1 = (x + 0) * (subdivisionsY + 1) + (y + 0)   

@@ -7,14 +7,8 @@ import Graphics.GL
 import Graphics.GL.Pal.Types
 import Graphics.GL.Pal.Geometry
 
-import Linear       hiding ( trace   )
--- import Control.Lens hiding ( indices )
+import Linear       hiding (trace)
 import Data.Foldable
--- import Debug.Trace
--- import Control.Arrow
-
---fI :: ( Integral a , Num b ) => a -> b
---fI = fromIntegral
 
 lineData :: GLuint -> GeometryData
 lineData  subdivisions = GeometryData{..}
@@ -31,7 +25,7 @@ lineData  subdivisions = GeometryData{..}
     gdTangents    = makeLineTangents  subdivisions
 
 
-makeLinePositions :: GLuint -> [ GLfloat ]
+makeLinePositions :: GLuint -> [GLfloat]
 makeLinePositions subdivisions = positions
   where
     positions = concatMap getPoint [0..subdivisions]
@@ -39,7 +33,7 @@ makeLinePositions subdivisions = positions
       where
         p = V3 ( fromIntegral i / fromIntegral subdivisions ) 0 0
 
-makeLineIndicies :: GLuint -> [ GLuint ]
+makeLineIndicies :: GLuint -> [GLuint]
 makeLineIndicies subdivisions = indices
   where
     indices = concatMap getPoint [0..(subdivisions-1)]
@@ -47,7 +41,7 @@ makeLineIndicies subdivisions = indices
       where
         p = V2 i (i+1)
 
-makeLineNormals :: GLuint -> [ GLfloat ]
+makeLineNormals :: GLuint -> [GLfloat]
 makeLineNormals subdivisions = positions
   where
     positions = concatMap getPoint [0..subdivisions]
@@ -55,7 +49,7 @@ makeLineNormals subdivisions = positions
       where
         p = V3 0 1 0
 
-makeLineTangents :: GLuint -> [ GLfloat ]
+makeLineTangents :: GLuint -> [GLfloat]
 makeLineTangents subdivisions = positions
   where
     positions = concatMap getPoint [0..subdivisions]
@@ -63,7 +57,7 @@ makeLineTangents subdivisions = positions
       where
         p = V3 0 0 1
 
-makeLineUVs :: GLuint -> [ GLfloat ]
+makeLineUVs :: GLuint -> [GLfloat]
 makeLineUVs subdivisions = positions
   where
     positions = concatMap getPoint [0..subdivisions]
@@ -73,8 +67,5 @@ makeLineUVs subdivisions = positions
 
 lineGeometry :: GLuint -> IO Geometry   
 lineGeometry subdivisions = geometryFromData $ lineData subdivisions 
-
-
-    
 
 

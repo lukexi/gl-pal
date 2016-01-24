@@ -4,10 +4,7 @@
 module Graphics.GL.Pal.Types where
 
 import Graphics.GL
-import Control.Monad.Trans
-import Foreign
 import Data.Data
-import Debug.Trace
 
 -- | For texture data
 data ColorSpace = SRGB | Linear
@@ -22,7 +19,8 @@ newtype ArrayBuffer         = ArrayBuffer         { unArrayBuffer         :: GLu
 newtype ElementArrayBuffer  = ElementArrayBuffer  { unElementArrayBuffer  :: GLuint } deriving Show
 newtype UniformBuffer       = UniformBuffer       { unUniformBuffer       :: GLuint } deriving Show
 
-newtype TextureObject       = TextureObject       { unTextureObject       :: GLuint } deriving Show
+newtype Framebuffer         = Framebuffer         { unFramebuffer         :: GLuint } deriving Show
+newtype Renderbuffer        = Renderbuffer        { unRenderbuffer        :: GLuint } deriving Show
 
 newtype UniformBlockBindingPoint = UniformBlockBindingPoint { unUniformBlockBindingPoint :: GLuint } deriving Show
 newtype UniformBlockIndex        = UniformBlockIndex        { unUniformBlockIndex        :: GLuint } deriving Show
@@ -59,13 +57,4 @@ data Shape u = Shape
   }
 
 
--- | Utility for extracting a value from a pointer-taking function
-overPtr :: (MonadIO m, Storable a) => (Ptr a -> IO b) -> m a
-overPtr f = liftIO (alloca (\p -> f p >> peek p))
 
-
-traceL :: Show a => String -> a -> a
-traceL label value = trace (label ++ ": " ++ show value) value
-
-fI :: ( Integral a , Num b ) => a -> b
-fI = fromIntegral

@@ -80,9 +80,9 @@ icosahedronGeometry size subdivisions = geometryFromData $ icosahedronData size 
 
 subdivide :: ([V3 GLfloat] , [V3 GLuint]) -> GLuint -> ([V3 GLfloat] , [V3 GLuint])
 subdivide (vertList, faceList) 0 = (vertList , faceList)
-subdivide (vertList, faceList) n = subdivide floopules (n - 1)
+subdivide (vertList, faceList) n = subdivide vertsAndFaces (n - 1)
   where 
-    floopules = first concat . second concat . unzip $ map getNewVerts (zip [0..] faceList)
+    vertsAndFaces = first concat . second concat . unzip $ map getNewVerts (zip [0..] faceList)
     getNewVerts (i, face) =
       let v1 = vertList !! fromIntegral (face ^. _x)
           v2 = vertList !! fromIntegral (face ^. _y)
@@ -101,7 +101,7 @@ subdivide (vertList, faceList) n = subdivide floopules (n - 1)
           faceListOffset = fmap (fmap (+ (i * 6))) newFaceList
           vertListNormal = fmap normalize newVertList
 
-      in (vertListNormal , faceListOffset)
+      in (vertListNormal, faceListOffset)
 
 
 getMidpoint :: V3 GLfloat -> V3 GLfloat -> V3 GLfloat

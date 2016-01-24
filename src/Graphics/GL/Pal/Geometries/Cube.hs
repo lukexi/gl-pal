@@ -5,6 +5,7 @@ module Graphics.GL.Pal.Geometries.Cube where
 import Graphics.GL
 
 import Graphics.GL.Pal.Types
+import Graphics.GL.Pal.Utility
 import Graphics.GL.Pal.Geometry
 import Graphics.GL.Pal.Geometries.Plane
 

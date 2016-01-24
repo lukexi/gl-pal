@@ -7,6 +7,7 @@ import Graphics.GL
 
 import Control.Monad.Reader
 import Graphics.GL.Pal.Types
+import Graphics.GL.Pal.Utility
 import Graphics.GL.Pal.InferUniforms
 import Graphics.GL.Pal.WithActions
 import Graphics.GL.Pal.AssignAttribute

@@ -4,21 +4,19 @@
 module Graphics.GL.Pal.Texture where
 
 import Graphics.GL.Pal.Types
+import Graphics.GL.Pal.Utility
 
 import Control.Monad (when)
 import Foreign.Ptr
 import Graphics.GL
 import Graphics.GL.Ext.EXT.TextureFilterAnisotropic
 import Prelude hiding (any, ceiling)
--- import Util
 
 import qualified Codec.Picture as JP
 import qualified Codec.Picture.Types as JP
 import qualified Data.Vector.Storable as SV
 
-
-
-loadTexture :: FilePath -> ColorSpace -> IO TextureObject
+loadTexture :: FilePath -> ColorSpace -> IO TextureID
 loadTexture path colorSpace = JP.readImage path >>= \case
     Right dimg -> do
         t <- overPtr (glGenTextures 1)
@@ -66,5 +64,5 @@ loadTexture path colorSpace = JP.readImage path >>= \case
         glGenerateMipmap GL_TEXTURE_2D
         when gl_EXT_texture_filter_anisotropic
             (glTexParameterf GL_TEXTURE_2D GL_TEXTURE_MAX_ANISOTROPY_EXT 16)
-        return (TextureObject t)
+        return (TextureID t)
     Left e -> error e

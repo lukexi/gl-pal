@@ -5,12 +5,16 @@ import Foreign
 import Graphics.GL
 
 import Graphics.GL.Pal.Types
+import Graphics.GL.Pal.Utility
 import Graphics.GL.Pal.WithActions
 
 import Control.Monad.Trans
 
+genBuffer :: MonadIO m => m GLuint
+genBuffer = overPtr (glGenBuffers 1)
+
 newUniformBuffer :: MonadIO m => m UniformBuffer
-newUniformBuffer = UniformBuffer <$> overPtr (glGenBuffers 1)
+newUniformBuffer = UniformBuffer <$> genBuffer
 
 bindUniformBufferBase :: MonadIO m => UniformBuffer -> UniformBlockBindingPoint -> m ()
 bindUniformBufferBase buffer bindingPoint = 
@@ -20,10 +24,10 @@ bindUniformBufferBase buffer bindingPoint =
 
 
 newArrayBuffer :: MonadIO m => m ArrayBuffer
-newArrayBuffer = ArrayBuffer <$> overPtr (glGenBuffers 1)
+newArrayBuffer = ArrayBuffer <$> genBuffer
 
 newElementArrayBuffer :: MonadIO m => m ElementArrayBuffer
-newElementArrayBuffer = ElementArrayBuffer <$> overPtr (glGenBuffers 1)
+newElementArrayBuffer = ElementArrayBuffer <$> genBuffer
 
 -- | Buffers a list of floats using the given draw hint, e.g. GL_STATIC_DRAW
 -- and returns a reference to the ArrayBuffer where the data is stored
