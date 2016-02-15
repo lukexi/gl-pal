@@ -11,13 +11,13 @@ import Foreign.Ptr
 import Graphics.GL
 import Graphics.GL.Ext.EXT.TextureFilterAnisotropic
 import Prelude hiding (any, ceiling)
-
+import Control.Monad.Trans
 import qualified Codec.Picture as JP
 import qualified Codec.Picture.Types as JP
 import qualified Data.Vector.Storable as SV
 
-loadTexture :: FilePath -> ColorSpace -> IO TextureID
-loadTexture path colorSpace = JP.readImage path >>= \case
+loadTexture :: MonadIO m => FilePath -> ColorSpace -> m TextureID
+loadTexture path colorSpace = liftIO (JP.readImage path) >>= \case
     Right dimg -> do
         t <- overPtr (glGenTextures 1)
         glBindTexture GL_TEXTURE_2D t
@@ -46,18 +46,18 @@ loadTexture path colorSpace = JP.readImage path >>= \case
            height
         case dimg of
           JP.ImageRGB8 (JP.Image _ _ d) ->
-            SV.unsafeWith d
+            liftIO $ SV.unsafeWith d
               (glTexSubImage2D GL_TEXTURE_2D 0 0 0 width height GL_RGB GL_UNSIGNED_BYTE .
                castPtr)
           JP.ImageRGBA8 (JP.Image _ _ d) ->
-            SV.unsafeWith d
+            liftIO $ SV.unsafeWith d
               (glTexSubImage2D GL_TEXTURE_2D 0 0 0 width height GL_RGBA GL_UNSIGNED_BYTE .
                castPtr)
           JP.ImageYCbCr8 img ->
             let toRgb8 = JP.convertPixel :: JP.PixelYCbCr8 -> JP.PixelRGB8
             in case JP.pixelMap toRgb8 img of
                  JP.Image _ _ d ->
-                   SV.unsafeWith d
+                   liftIO $ SV.unsafeWith d
                      (glTexSubImage2D GL_TEXTURE_2D 0 0 0 width height GL_RGB GL_UNSIGNED_BYTE .
                       castPtr)
           _ -> error "Unknown image format"

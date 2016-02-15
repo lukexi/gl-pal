@@ -22,7 +22,7 @@ newVAO = VertexArrayObject <$> overPtr (glGenVertexArrays 1)
 
 -- | A shape is the combination of a VAO, a program, 
 -- and the collection of uniforms for that program.
-makeShape :: Data u => Geometry -> Program -> IO (Shape u)
+makeShape :: (MonadIO m, Data u) => Geometry -> Program -> m (Shape u)
 makeShape sGeometry@Geometry{..} sProgram = do
 
   -- Setup a VAO

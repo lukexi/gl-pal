@@ -3,8 +3,9 @@ module Graphics.GL.Pal.Geometry where
 import Graphics.GL.Pal.Types
 import Graphics.GL.Pal.ArrayBuffer
 import Graphics.GL
+import Control.Monad.Trans
 
-geometryFromData :: GeometryData -> IO Geometry
+geometryFromData :: MonadIO m => GeometryData -> m Geometry
 geometryFromData GeometryData{..} = do
 
   geoPositions   <- bufferData GL_STATIC_DRAW gdPositions

@@ -12,7 +12,7 @@ withFramebuffer framebuffer action = do
 
 
 -- | Create and configure the texture to use for our framebuffer
-createFramebufferTexture :: GLsizei -> GLsizei -> IO GLuint
+createFramebufferTexture :: MonadIO m => GLsizei -> GLsizei -> m GLuint
 createFramebufferTexture sizeX sizeY = do
     texID <- overPtr (glGenTextures 1)
     
@@ -27,7 +27,7 @@ createFramebufferTexture sizeX sizeY = do
     return texID
 
 -- | Create the framebuffer we'll render into and pass to the Oculus SDK
-createFramebuffer :: GLsizei -> GLsizei -> IO (GLuint, GLuint)
+createFramebuffer :: MonadIO m => GLsizei -> GLsizei -> m (GLuint, GLuint)
 createFramebuffer sizeX sizeY = do
     framebufferTexture <- createFramebufferTexture sizeX sizeY
   

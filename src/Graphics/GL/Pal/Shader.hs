@@ -24,7 +24,7 @@ useProgram (Program prog) = glUseProgram (fromIntegral prog)
 -- | Takes the raw source of a pair of shader programs. 
 -- Useful when getting shader source from somewhere other than a file,
 -- or for munging shader source before compiling it.
-createShaderProgramFromSources :: String -> Text -> String -> Text -> IO Program
+createShaderProgramFromSources :: MonadIO m => String -> Text -> String -> Text -> m Program
 createShaderProgramFromSources vertexShaderName vertexShaderSource fragmentShaderName fragmentShaderSource = do 
   
   vertexShader <- glCreateShader GL_VERTEX_SHADER
@@ -35,10 +35,10 @@ createShaderProgramFromSources vertexShaderName vertexShaderSource fragmentShade
 
   fst <$> attachProgram vertexShader fragmentShader
 
-createShaderProgram :: FilePath -> FilePath -> IO Program
+createShaderProgram :: MonadIO m => FilePath -> FilePath -> m Program
 createShaderProgram vp fp = fst <$> createShaderProgram' vp fp
 
-createShaderProgram' :: FilePath -> FilePath -> IO (Program, String)
+createShaderProgram' :: MonadIO m => FilePath -> FilePath -> m (Program, String)
 createShaderProgram' vertexPath fragmentPath = do 
   
   vertexShader <- glCreateShader GL_VERTEX_SHADER
@@ -58,7 +58,7 @@ createShaderProgram' vertexPath fragmentPath = do
 
 
 
-attachProgram :: GLuint -> GLuint -> IO (Program, String)
+attachProgram :: MonadIO m => GLuint -> GLuint -> m (Program, String)
 attachProgram vertexShader fragmentShader = do
 
   prog <- glCreateProgram
@@ -75,17 +75,17 @@ attachProgram vertexShader fragmentShader = do
 
 
 
-compileShaderAtPath :: FilePath -> GLuint -> IO String
+compileShaderAtPath :: MonadIO m => FilePath -> GLuint -> m String
 compileShaderAtPath path shader = do
 
-  src <- Text.readFile path
+  src <- liftIO $ Text.readFile path
 
   compileShaderSource path src shader 
 
-compileShaderSource :: String -> Text -> GLuint -> IO String
+compileShaderSource :: MonadIO m => String -> Text -> GLuint -> m String
 compileShaderSource path src shader = do
   
-  BS.useAsCString (Text.encodeUtf8 src) $ \ptr ->
+  liftIO $ BS.useAsCString (Text.encodeUtf8 src) $ \ptr ->
     withArray [ptr] $ \srcs ->
       glShaderSource shader 1 srcs nullPtr
 
@@ -161,7 +161,7 @@ glGetErrors = do
 
       glGetErrors
 
-checkLinkStatus :: GLuint -> IO String
+checkLinkStatus :: MonadIO m => GLuint -> m String
 checkLinkStatus prog = do
 
   linked <- overPtr (glGetProgramiv prog GL_LINK_STATUS)
@@ -170,19 +170,19 @@ checkLinkStatus prog = do
     then do
       maxLength <- overPtr (glGetProgramiv prog GL_INFO_LOG_LENGTH)
 
-      logLines <- allocaArray (fromIntegral maxLength) $ \p ->
+      logLines <- liftIO $ allocaArray (fromIntegral maxLength) $ \p ->
                   alloca $ \lenP -> do
 
                     glGetProgramInfoLog prog maxLength lenP p
                     len <- peek lenP
                     peekCStringLen (p, fromIntegral len)
 
-      putStrLn logLines
+      liftIO $ putStrLn logLines
       return logLines
     else return ""
 
 
-checkCompileStatus :: String -> GLuint -> IO String
+checkCompileStatus :: MonadIO m => String -> GLuint -> m String
 checkCompileStatus path shader = do
 
   compiled <- overPtr (glGetShaderiv shader GL_COMPILE_STATUS)
@@ -191,15 +191,15 @@ checkCompileStatus path shader = do
     then do
       maxLength <- overPtr (glGetShaderiv shader GL_INFO_LOG_LENGTH)
 
-      logLines <- allocaArray (fromIntegral maxLength) $ \p ->
+      logLines <- liftIO $ allocaArray (fromIntegral maxLength) $ \p ->
                   alloca $ \lenP -> do 
 
                     glGetShaderInfoLog shader maxLength lenP p
                     len <- peek lenP
                     peekCStringLen (p, fromIntegral len)
 
-      putStrLn ("In " ++ path ++ ":")
+      liftIO $ putStrLn ("In " ++ path ++ ":")
       
-      putStrLn logLines
+      liftIO $ putStrLn logLines
       return logLines
     else return ""
