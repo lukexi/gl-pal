@@ -9,6 +9,7 @@ import Graphics.GL.Pal.Geometry
 
 import Linear       hiding (trace)
 import Data.Foldable
+import Control.Monad.Trans
 
 lineData :: GLuint -> GeometryData
 lineData  subdivisions = GeometryData{..}

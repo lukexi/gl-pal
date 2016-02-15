@@ -11,6 +11,7 @@ import Linear       hiding (trace)
 import Control.Lens hiding (indices)
 import Data.Foldable
 import Control.Arrow
+import Control.Monad.Trans
 
 icosahedronData :: GLfloat  -> GLuint -> GeometryData
 icosahedronData size subdivisions = GeometryData{..}
