@@ -38,7 +38,7 @@ planeData size normal up subdivisions = GeometryData{..}
     gdIndices     = makePlaneIndices subdivisionsX subdivisionsY
 
 
-planeGeometry :: V2 GLfloat -> V3 GLfloat -> V3 GLfloat -> V2 Int -> IO Geometry
+planeGeometry :: MonadIO m => V2 GLfloat -> V3 GLfloat -> V3 GLfloat -> V2 Int -> m Geometry
 planeGeometry size normal up subdivisions = geometryFromData $ planeData size normal up subdivisions 
 
 

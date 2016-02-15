@@ -75,7 +75,7 @@ makeIcosahedronTangents positionList = tangents
         getTangent _ = [0, 0, 0]
 
 
-icosahedronGeometry :: GLfloat -> GLuint -> IO Geometry   
+icosahedronGeometry :: MonadIO m => GLfloat -> GLuint -> m Geometry
 icosahedronGeometry size subdivisions = geometryFromData $ icosahedronData size subdivisions
 
 subdivide :: ([V3 GLfloat] , [V3 GLuint]) -> GLuint -> ([V3 GLfloat] , [V3 GLuint])

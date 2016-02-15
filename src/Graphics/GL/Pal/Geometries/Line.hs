@@ -65,7 +65,7 @@ makeLineUVs subdivisions = positions
       where
         p = V2 ( fromIntegral i / fromIntegral subdivisions ) 0
 
-lineGeometry :: GLuint -> IO Geometry   
+lineGeometry :: MonadIO m => GLuint -> m Geometry   
 lineGeometry subdivisions = geometryFromData $ lineData subdivisions 
 
 

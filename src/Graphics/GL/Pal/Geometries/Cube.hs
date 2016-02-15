@@ -9,10 +9,10 @@ import Graphics.GL.Pal.Utility
 import Graphics.GL.Pal.Geometry
 import Graphics.GL.Pal.Geometries.Plane
 
-import Linear       hiding ( trace   )
-import Control.Lens hiding ( indices )
+import Linear       hiding (trace)
+import Control.Lens hiding (indices)
 import Data.Foldable
-
+import Control.Monad.Trans
 
 cubeData :: V3 GLfloat -> V3 Int -> GeometryData
 cubeData size subdivisions =
@@ -118,5 +118,5 @@ makeCubePoints (n1,n2,n3,n4,n5,n6) (u1,u2,u3,u4,u5,u6) (s1,s2,s3,s4,s5,s6) (d1,d
 
 
       
-cubeGeometry :: V3 GLfloat -> V3 Int -> IO Geometry   
+cubeGeometry :: MonadIO m => V3 GLfloat -> V3 Int -> m Geometry
 cubeGeometry size subdivisions = geometryFromData $ cubeData size subdivisions 
