@@ -19,11 +19,12 @@ profileInUnits toUnit unitName name indent action = do
     after <- liftIO getCurrentTime
     let diffS = realToFrac (after `diffUTCTime` before) :: Float
         tabs  = replicate indent '\t'
+        marker = if indent == 0 then "╚ " else "╠ "
     -- when (diff > 1/180) $ 
     when (diffS > 0) $ do
       let time  = toUnit diffS
           unit  = unitName
-      liftIO $ putStrLn (tabs ++ name ++ " Computation time: " ++ show time ++ unit)
+      liftIO $ putStrLn (marker ++ tabs ++ name ++ " : " ++ show time ++ unit)
     return x
 
 profileFPS :: MonadIO m => String -> Int -> m b -> m b
