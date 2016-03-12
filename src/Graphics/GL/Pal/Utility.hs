@@ -35,6 +35,5 @@ overPtr :: (MonadIO m, Storable a) => (Ptr a -> IO b) -> m a
 overPtr f = liftIO (alloca (\p -> f p >> peek p))
 
 
-
-fI :: (Integral a , Num b) => a -> b
+fI :: (Integral a, Num b) => a -> b
 fI = fromIntegral
