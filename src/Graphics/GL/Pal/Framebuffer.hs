@@ -42,7 +42,7 @@ createFramebuffer sizeX sizeY = do
   
     -- Configure the depth buffer dimensions to match the eye texture
     glBindRenderbuffer GL_RENDERBUFFER renderbuffer
-    glRenderbufferStorage GL_RENDERBUFFER GL_DEPTH_COMPONENT16 sizeX sizeY
+    glRenderbufferStorage GL_RENDERBUFFER GL_DEPTH_COMPONENT32 sizeX sizeY
     glBindRenderbuffer GL_RENDERBUFFER 0
   
     -- Attach the render buffer as the depth target
