@@ -7,13 +7,13 @@ import Control.Monad.Trans
 
 geometryFromData :: MonadIO m => GeometryData -> m Geometry
 geometryFromData GeometryData{..} = do
-
-  geoPositions   <- bufferData GL_STATIC_DRAW gdPositions
-  geoNormals     <- bufferData GL_STATIC_DRAW gdNormals
-  geoTangents    <- bufferData GL_STATIC_DRAW gdTangents
-  geoUVs         <- bufferData GL_STATIC_DRAW gdUVs
-  geoIndices     <- bufferElementData gdIndices
   
-  let geoVertCount = gdNumVerts
-
-  return Geometry{..}
+    geoPositions   <- bufferData GL_STATIC_DRAW gdPositions
+    geoNormals     <- bufferData GL_STATIC_DRAW gdNormals
+    geoTangents    <- bufferData GL_STATIC_DRAW gdTangents
+    geoUVs         <- bufferData GL_STATIC_DRAW gdUVs
+    geoIndices     <- bufferElementData gdIndices
+    
+    let geoVertCount = gdNumVerts
+  
+    return Geometry{..}

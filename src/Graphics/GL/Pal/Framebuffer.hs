@@ -1,8 +1,12 @@
+{-# LANGUAGE RecordWildCards #-}
 module Graphics.GL.Pal.Framebuffer where
 
 import Graphics.GL
 import Control.Monad.Trans
 import Graphics.GL.Pal.Utility
+import Graphics.GL.Pal.Types
+import Control.Monad
+import Foreign
 
 withFramebuffer :: MonadIO m => GLuint -> m a -> m ()
 withFramebuffer framebuffer action = do
@@ -52,3 +56,75 @@ createFramebuffer sizeX sizeY = do
     glBindFramebuffer GL_FRAMEBUFFER 0
   
     return (framebuffer, framebufferTexture)
+
+data MultisampleFramebuffer = MultisampleFramebuffer
+    { mfbRenderFramebufferID :: Framebuffer
+    , mfbRenderTextureID :: TextureID
+    , mfbResolveFramebufferID :: Framebuffer
+    , mfbResolveTextureID :: TextureID
+    , mfbWidth  :: GLint
+    , mfbHeight :: GLint
+    }
+
+createMultisampleFramebuffer sizeX sizeY = do
+    renderFramebufferID <- overPtr (glGenFramebuffers 1)
+    glBindFramebuffer GL_FRAMEBUFFER renderFramebufferID
+
+    depthBufferID <- overPtr (glGenRenderbuffers 1)
+    glBindRenderbuffer GL_RENDERBUFFER depthBufferID
+
+    glRenderbufferStorageMultisample GL_RENDERBUFFER 4 GL_DEPTH_COMPONENT32 sizeX sizeY
+    glFramebufferRenderbuffer GL_FRAMEBUFFER GL_DEPTH_ATTACHMENT GL_RENDERBUFFER depthBufferID
+
+    renderTextureID <- overPtr (glGenTextures 1)
+    glBindTexture GL_TEXTURE_2D_MULTISAMPLE renderTextureID
+    glTexImage2DMultisample GL_TEXTURE_2D_MULTISAMPLE 4 GL_RGBA8 sizeX sizeY GL_TRUE
+    glFramebufferTexture2D GL_FRAMEBUFFER GL_COLOR_ATTACHMENT0 GL_TEXTURE_2D_MULTISAMPLE renderTextureID 0
+
+    resolveFramebufferID <- overPtr (glGenFramebuffers 1)
+    glBindFramebuffer GL_FRAMEBUFFER resolveFramebufferID
+
+    resolveTextureID <- overPtr (glGenTextures 1) 
+    glBindTexture GL_TEXTURE_2D resolveTextureID
+    glTexParameteri GL_TEXTURE_2D GL_TEXTURE_MIN_FILTER GL_LINEAR
+    glTexParameteri GL_TEXTURE_2D GL_TEXTURE_MAX_LEVEL 0
+    glTexImage2D GL_TEXTURE_2D 0 GL_RGBA8 sizeX sizeY 0 GL_RGBA GL_UNSIGNED_BYTE nullPtr
+    glFramebufferTexture2D GL_FRAMEBUFFER GL_COLOR_ATTACHMENT0 GL_TEXTURE_2D resolveTextureID 0
+
+    -- check FBO status
+    status <- glCheckFramebufferStatus GL_FRAMEBUFFER
+    when (status /= GL_FRAMEBUFFER_COMPLETE) $ 
+        error "createMultisampleFramebuffer: Framebuffer status incomplete"
+
+    glBindFramebuffer GL_FRAMEBUFFER 0
+
+    return MultisampleFramebuffer 
+        { mfbRenderFramebufferID = Framebuffer renderFramebufferID 
+        , mfbRenderTextureID = TextureID renderTextureID
+        , mfbResolveFramebufferID = Framebuffer resolveFramebufferID
+        , mfbResolveTextureID = TextureID resolveTextureID
+        , mfbWidth = sizeX
+        , mfbHeight = sizeY
+        }
+
+withMultisamplingFramebuffer MultisampleFramebuffer{..} action = do
+
+    glEnable GL_MULTISAMPLE
+
+    glBindFramebuffer GL_FRAMEBUFFER (unFramebuffer mfbRenderFramebufferID)
+    
+    _ <- action
+
+    glBindFramebuffer GL_FRAMEBUFFER 0
+    
+    glDisable GL_MULTISAMPLE
+        
+    glBindFramebuffer GL_READ_FRAMEBUFFER (unFramebuffer mfbRenderFramebufferID)
+    glBindFramebuffer GL_DRAW_FRAMEBUFFER (unFramebuffer mfbResolveFramebufferID)
+
+    glBlitFramebuffer 0 0 mfbWidth mfbHeight 0 0 mfbWidth mfbHeight 
+        GL_COLOR_BUFFER_BIT
+        GL_LINEAR
+
+    glBindFramebuffer GL_READ_FRAMEBUFFER 0
+    glBindFramebuffer GL_DRAW_FRAMEBUFFER 0 
