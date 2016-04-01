@@ -12,8 +12,8 @@ data Uniforms = Uniforms
     { uMVP :: UniformLocation (M44 GLfloat)
     } deriving Data
 
-randomOffsets :: GLsizei -> GLfloat -> IO [V3 GLfloat]
-randomOffsets instanceCount t = forM [0..instanceCount-1] $ \i -> do
+randomPositions :: GLsizei -> GLfloat -> IO [V3 GLfloat]
+randomPositions instanceCount t = forM [0..instanceCount-1] $ \i -> do
     let x = fromIntegral $ (i `div` 100) - 50
         y = fromIntegral $ (i `mod` 100) - 50
     return (V3 x (y + sin (t + fromIntegral i)) 0)
@@ -27,16 +27,16 @@ main = do
     cubeGeo       <- cubeGeometry 0.5 1
     cubeShape     <- makeShape cubeGeo shader
   
-    let numInstances = 10000
+    let numInstances = 1000
   
-    initialOffsets <- randomOffsets numInstances 0
-    offsetBuffer   <- bufferData GL_DYNAMIC_DRAW (concatMap toList initialOffsets)
-    iBuffer        <- bufferData GL_DYNAMIC_DRAW (replicate (fromIntegral numInstances) 5 :: [GLint])
-    withVAO (sVAO cubeShape) $ do
-      withArrayBuffer offsetBuffer $ 
-          assignFloatAttributeInstanced program "aInstanceOffset " GL_FLOAT 3
-      withArrayBuffer iBuffer $
-          assignIntegerAttributeInstanced program "aInstanceI"     GL_INT   1
+    initialOffsets  <- randomPositions numInstances 0
+    positionsBuffer <- bufferData GL_DYNAMIC_DRAW (concatMap toList initialOffsets)
+    --iBuffer        <- bufferData GL_DYNAMIC_DRAW (replicate (fromIntegral numInstances) 5 :: [GLint])
+    withShape cubeShape $ do
+        withArrayBuffer positionsBuffer $ 
+            assignFloatAttributeInstanced   shader "aInstancePosition" GL_FLOAT 3
+        --withArrayBuffer iBuffer $
+        --    assignIntegerAttributeInstanced shader "aInstancePosI"     GL_INT   1
     
     glEnable GL_DEPTH_TEST
     glClearColor 0.0 0.0 0.1 1
@@ -54,11 +54,11 @@ main = do
     
         t <- (*10) . realToFrac . utctDayTime <$> getCurrentTime
     
-        newOffsets <- randomOffsets numInstances t
-        bufferSubData offsetBuffer (concatMap toList newOffsets)
-        -- bufferSubData iBuffer (replicate (fromIntegral numInstances) 0 :: [GLint])
+        newOffsets <- randomPositions numInstances t
+        bufferSubData positionsBuffer (concatMap toList newOffsets)
+        --bufferSubData iBuffer (replicate (fromIntegral numInstances) 0 :: [GLint])
         
-        let model = mkTransformation (axisAngle (V3 1 1 0) 0) (V3 0 1 0)
+        let model = mkTransformation (axisAngle (V3 1 1 0) 1) (V3 0 1 0)
     
         withShape cubeShape $ do
             Uniforms{..} <- asks sUniforms
