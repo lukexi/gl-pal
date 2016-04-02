@@ -12,7 +12,7 @@ out vec4 vColor;
 
 void main( void ) { 
 
-  gl_Position = uProjectionView * aInstanceTransform * vec4(aPosition, 1.0);
+  gl_Position = uProjectionView * transpose(aInstanceTransform) * vec4(aPosition, 1.0);
 
   vNormal = aNormal;
   vColor = aInstanceColor;

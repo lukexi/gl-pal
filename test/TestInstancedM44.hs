@@ -1,32 +1,38 @@
-{-# LANGUAGE RecordWildCards, DeriveDataTypeable #-}
+{-# LANGUAGE RecordWildCards, DeriveDataTypeable, BangPatterns #-}
 import Graphics.UI.GLFW.Pal
 import Graphics.GL.Pal
 import Halive.Utils
 import Control.Monad.Reader
 import Data.Time
-import Data.Foldable
 
-import System.Random
+import qualified Data.Vector.Storable.Mutable as VM
 
 data Uniforms = Uniforms 
     { uProjectionView :: UniformLocation (M44 GLfloat)
     } deriving Data
 
-generateTransforms :: GLsizei -> GLfloat -> IO [M44 GLfloat]
-generateTransforms instanceCount t = forM [0..instanceCount-1] $ \i -> do
+numInstances :: Num a => a
+numInstances = 10000
 
+generateTransforms :: Integral a => GLfloat -> a -> M44 GLfloat
+generateTransforms t i = 
     let x = fromIntegral $ (i `div` 100) - 50  :: GLfloat
         y = fromIntegral $ (i `mod` 100) - 50 :: GLfloat
         m44 = mkTransformation 
                 (axisAngle (V3 1 1 0) 1) 
                 (V3 x (y + sin (t + fromIntegral i)) 0)
-    return (transpose m44 :: M44 GLfloat)
+    in m44
 
-generateColors :: GLsizei -> GLfloat -> IO [V4 GLfloat]
-generateColors instanceCount t = forM [0..instanceCount-1] $ \i -> do
-    hue <- randomIO
-    --return (hslColor (fromIntegral i / fromIntegral instanceCount) 0.9 0.6)
-    return (hslColor hue 0.9 0.6)
+generateColors :: Integral a => GLfloat -> a -> V4 GLfloat
+generateColors t i = hslColor hue 0.9 0.6
+    where hue = fromIntegral i / numInstances + sin t
+
+loop :: (Monad m) => Int -> (Int -> m a) -> m a
+loop n action = go 0
+    where
+        go !i
+            | i == (n-1) = action i
+            | otherwise  = action i >> go (i + 1)
 
 main :: IO ()
 main = do
@@ -37,11 +43,10 @@ main = do
     cubeGeo       <- cubeGeometry 0.5 1
     cubeShape     <- makeShape cubeGeo shader
   
-    let numInstances = 10000
-    initialTransforms  <- generateTransforms numInstances 0
-    initialColors      <- generateColors numInstances 0
-    positionsBuffer    <- bufferData GL_DYNAMIC_DRAW (concatMap toList initialTransforms)
-    colorsBuffer       <- bufferData GL_DYNAMIC_DRAW (concatMap toList initialColors)
+    transformsVector <- VM.replicate numInstances (identity :: M44 GLfloat)
+    colorsVector     <- VM.replicate numInstances (V4 0 0 0 0 :: V4 GLfloat)
+    positionsBuffer    <- bufferDataV GL_DYNAMIC_DRAW transformsVector
+    colorsBuffer       <- bufferDataV GL_DYNAMIC_DRAW colorsVector
     withShape cubeShape $ do
         withArrayBuffer positionsBuffer $ 
             assignMatrixAttributeInstanced shader "aInstanceTransform" GL_FLOAT
@@ -62,10 +67,12 @@ main = do
         let view = viewMatrix (V3 0 0 100) (axisAngle (V3 0 1 0) 0)
     
         t <- (*10) . realToFrac . utctDayTime <$> getCurrentTime
-        newM44s   <- generateTransforms numInstances t
-        newColors <- generateColors numInstances t
-        bufferSubData positionsBuffer (concatMap toList newM44s)
-        bufferSubData colorsBuffer    (concatMap toList newColors)
+        
+        loop numInstances (\i -> VM.write transformsVector i (generateTransforms t i))
+        loop numInstances (\i -> VM.write colorsVector i (generateColors t i))
+
+        bufferSubDataV positionsBuffer transformsVector
+        bufferSubDataV colorsBuffer    colorsVector
         
         withShape cubeShape $ do
             Uniforms{..} <- asks sUniforms
