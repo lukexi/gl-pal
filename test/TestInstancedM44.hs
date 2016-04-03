@@ -12,7 +12,7 @@ data Uniforms = Uniforms
     } deriving Data
 
 numInstances :: Num a => a
-numInstances = 10000
+numInstances = 100
 
 generateTransforms :: Integral a => GLfloat -> a -> M44 GLfloat
 generateTransforms t i = 
@@ -67,9 +67,10 @@ main = do
         let view = viewMatrix (V3 0 0 100) (axisAngle (V3 0 1 0) 0)
     
         t <- (*10) . realToFrac . utctDayTime <$> getCurrentTime
-        
-        loopM numInstances (\i -> VM.write transformsVector i (generateTransforms t i))
-        loopM numInstances (\i -> VM.write colorsVector i (generateColors t i))
+
+        profileMS ("writeVectors") 0 $ do 
+            loop numInstances (\i -> VM.write transformsVector i (generateTransforms t i))
+            loop numInstances (\i -> VM.write colorsVector i (generateColors t i))
 
         bufferSubDataV positionsBuffer transformsVector
         bufferSubDataV colorsBuffer    colorsVector

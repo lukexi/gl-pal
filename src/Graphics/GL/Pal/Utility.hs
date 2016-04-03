@@ -1,6 +1,7 @@
 module Graphics.GL.Pal.Utility where
 import Control.Monad.Trans
 import Control.Monad
+import System.Clock
 import Data.Time
 import Debug.Trace
 import Foreign
@@ -11,29 +12,35 @@ putStrLnIO = liftIO . putStrLn
 printIO :: (Show s, MonadIO m) => s -> m ()
 printIO = putStrLnIO . show
 
-profileInUnits :: MonadIO m => (Float -> Float) -> String -> String -> Int -> m b -> m b
+nsToMS = ((/ 1000000) . fromIntegral)
+nsToS = ((/ 1000) . nsToMS)
+nsToFPS = ((1/) . nsToS)
+
+profileInUnits :: MonadIO m => (Integer -> Float) -> String -> String -> Int -> m b -> m b
 profileInUnits toUnit unitName name indent action = do
-    -- getCPUTime does not work on Windows >:() so we use getCurrentTime instead
-    before <- liftIO getCurrentTime
+    let clockType = Monotonic
+    --let clockType = Realtime
+    before <- liftIO (getTime clockType)
     x <- action
-    after <- liftIO getCurrentTime
-    let diffS = realToFrac (after `diffUTCTime` before) :: Float
+    after <- liftIO (getTime clockType)
+    let nanoSecDiff = timeSpecAsNanoSecs $ after `diffTimeSpec` before
         tabs  = replicate indent '\t'
         marker = if indent == 0 then "╚ " else "╠ "
-    -- when (diff > 1/180) $ 
-    when (diffS > 0) $ do
-      let time  = toUnit diffS
-          unit  = unitName
-      liftIO $ putStrLn (marker ++ tabs ++ name ++ " : " ++ show time ++ unit)
+    -- when (nanoSecDiff > 0) $ do
+    do
+        let time  = toUnit nanoSecDiff
+            unit  = unitName
+        liftIO $ putStrLn (marker ++ tabs ++ name ++ " : " ++ show time ++ unit)
     return x
 
 profileFPS :: MonadIO m => String -> Int -> m b -> m b
-profileFPS = profileInUnits (1/) "fps"
+profileFPS = profileInUnits nsToFPS "fps"
 
 profileMS :: MonadIO m => String -> Int -> m b -> m b
-profileMS  = profileInUnits (*1000) "ms"
+profileMS  = profileInUnits nsToMS "ms"
+
 profileS :: MonadIO m => String -> Int -> m b -> m b
-profileS   = profileInUnits id "s"
+profileS   = profileInUnits nsToS "s"
 
 profile :: MonadIO m => String -> Int -> m b -> m b
 profile = profileMS 
