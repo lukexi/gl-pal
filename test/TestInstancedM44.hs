@@ -27,8 +27,8 @@ generateColors :: Integral a => GLfloat -> a -> V4 GLfloat
 generateColors t i = hslColor hue 0.9 0.6
     where hue = fromIntegral i / numInstances + sin t
 
-loop :: (Monad m) => Int -> (Int -> m a) -> m a
-loop n action = go 0
+loopM :: (Monad m) => Int -> (Int -> m a) -> m a
+loopM n action = go 0
     where
         go !i
             | i == (n-1) = action i
@@ -43,18 +43,18 @@ main = do
     cubeGeo       <- cubeGeometry 0.5 1
     cubeShape     <- makeShape cubeGeo shader
   
-    transformsVector <- VM.replicate numInstances (identity :: M44 GLfloat)
-    colorsVector     <- VM.replicate numInstances (V4 0 0 0 0 :: V4 GLfloat)
+    transformsVector   <- VM.replicate numInstances (identity :: M44 GLfloat)
+    colorsVector       <- VM.replicate numInstances (V4 0 0 0 0 :: V4 GLfloat)
     positionsBuffer    <- bufferDataV GL_DYNAMIC_DRAW transformsVector
     colorsBuffer       <- bufferDataV GL_DYNAMIC_DRAW colorsVector
     withShape cubeShape $ do
         withArrayBuffer positionsBuffer $ 
             assignMatrixAttributeInstanced shader "aInstanceTransform" GL_FLOAT
         withArrayBuffer colorsBuffer $ 
-            assignFloatAttributeInstanced shader "aInstanceColor" GL_FLOAT 4
+            assignFloatAttributeInstanced  shader "aInstanceColor" GL_FLOAT 4
     glEnable GL_DEPTH_TEST
     glClearColor 0.0 0.0 0.1 1
-  
+    
     whileWindow win $ do
         processEvents events $ closeOnEscape win
 
@@ -68,8 +68,8 @@ main = do
     
         t <- (*10) . realToFrac . utctDayTime <$> getCurrentTime
         
-        loop numInstances (\i -> VM.write transformsVector i (generateTransforms t i))
-        loop numInstances (\i -> VM.write colorsVector i (generateColors t i))
+        loopM numInstances (\i -> VM.write transformsVector i (generateTransforms t i))
+        loopM numInstances (\i -> VM.write colorsVector i (generateColors t i))
 
         bufferSubDataV positionsBuffer transformsVector
         bufferSubDataV colorsBuffer    colorsVector
