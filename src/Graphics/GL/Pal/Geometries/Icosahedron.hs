@@ -50,30 +50,29 @@ icosahedronData size subdivisions = GeometryData{..}
     gdTangents    = makeIcosahedronTangents       newVertList
 
 
-makeIcosahedronPositions :: GLfloat -> [V3 GLfloat] -> [GLfloat]
-makeIcosahedronPositions size vertList  = concatMap toList (map (realToFrac size *) vertList)
+makeIcosahedronPositions :: GLfloat -> [V3 GLfloat] -> [V3 GLfloat]
+makeIcosahedronPositions size vertList  = map (realToFrac size *) vertList
 
 makeIcosahedronIndices :: (Foldable t, Foldable t1) => t (t1 b) -> [b]
 makeIcosahedronIndices indexList        = concatMap toList indexList
 
-makeIcosahedronNormals :: (Floating b, Foldable t, Metric t, Epsilon b) 
-                       => [t b] -> [b]
-makeIcosahedronNormals positionList     = concatMap toList (map normalize positionList)
+makeIcosahedronNormals :: [V3 GLfloat] -> [V3 GLfloat]
+makeIcosahedronNormals positionList     = map normalize positionList
 
-makeIcosahedronUVs :: [V3 GLfloat] -> [GLfloat]
+makeIcosahedronUVs :: [V3 GLfloat] -> [V2 GLfloat]
 makeIcosahedronUVs positionList = uvs
     where 
-        uvs = concatMap getUV positionList
+        uvs = map getUV positionList
         getUV p = 
             let u = asin (p^._x)/pi + 0.5
                 v = asin (p^._y)/pi + 0.5
-            in [u , 1 - v]
+            in V2 u (1 - v)
 
-makeIcosahedronTangents :: [V3 GLfloat] -> [ GLfloat ]
+makeIcosahedronTangents :: [V3 GLfloat] -> [V3 GLfloat]
 makeIcosahedronTangents positionList = tangents
     where 
-        tangents = concatMap getTangent [0..length positionList]
-        getTangent _ = [0, 0, 0]
+        tangents = map getTangent [0..length positionList]
+        getTangent _ = V3 0 0 0
 
 
 icosahedronGeometry :: MonadIO m => GLfloat -> GLuint -> m Geometry

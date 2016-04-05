@@ -17,7 +17,7 @@ withVAO aVAO action = do
   return result
 
 
-withArrayBuffer :: MonadIO m => ArrayBuffer -> m a -> m a
+withArrayBuffer :: MonadIO m => ArrayBuffer b -> m a -> m a
 withArrayBuffer buffer action = do
 
   glBindBuffer GL_ARRAY_BUFFER (unArrayBuffer buffer)

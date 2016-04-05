@@ -26,11 +26,11 @@ lineData  subdivisions = GeometryData{..}
     gdTangents    = makeLineTangents  subdivisions
 
 
-makeLinePositions :: GLuint -> [GLfloat]
+makeLinePositions :: GLuint -> [V3 GLfloat]
 makeLinePositions subdivisions = positions
   where
-    positions = concatMap getPoint [0..subdivisions]
-    getPoint i = toList p
+    positions = map getPoint [0..subdivisions]
+    getPoint i = p
       where
         p = V3 ( fromIntegral i / fromIntegral subdivisions ) 0 0
 
@@ -42,27 +42,27 @@ makeLineIndicies subdivisions = indices
       where
         p = V2 i (i+1)
 
-makeLineNormals :: GLuint -> [GLfloat]
+makeLineNormals :: GLuint -> [V3 GLfloat]
 makeLineNormals subdivisions = positions
   where
-    positions = concatMap getPoint [0..subdivisions]
-    getPoint _ = toList p
+    positions = map getPoint [0..subdivisions]
+    getPoint _ = p
       where
         p = V3 0 1 0
 
-makeLineTangents :: GLuint -> [GLfloat]
+makeLineTangents :: GLuint -> [V3 GLfloat]
 makeLineTangents subdivisions = positions
   where
-    positions = concatMap getPoint [0..subdivisions]
-    getPoint _ = toList p
+    positions = map getPoint [0..subdivisions]
+    getPoint _ = p
       where
         p = V3 0 0 1
 
-makeLineUVs :: GLuint -> [GLfloat]
+makeLineUVs :: GLuint -> [V2 GLfloat]
 makeLineUVs subdivisions = positions
   where
-    positions = concatMap getPoint [0..subdivisions]
-    getPoint i = toList p
+    positions = map getPoint [0..subdivisions]
+    getPoint i = p
       where
         p = V2 ( fromIntegral i / fromIntegral subdivisions ) 0
 
