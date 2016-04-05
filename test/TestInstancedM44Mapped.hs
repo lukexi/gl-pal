@@ -78,11 +78,10 @@ main = do
     
         t <- (*3) . realToFrac . utctDayTime <$> getCurrentTime
 
-        whenSABReset     sab maxInstances resetShapeInstanceBuffers
-        fillSABBuffer    sab maxInstances transformsBuffer  (return . generateTransforms t)
-        fillSABBuffer    sab maxInstances colorsBuffer      (return . generateColors t)
-        updateSABOffsets sab maxInstances
-        
+        writeSAB sab maxInstances resetShapeInstanceBuffers $ do
+            fillSABBuffer transformsBuffer  (return . generateTransforms t)
+            fillSABBuffer colorsBuffer      (return . generateColors t)
+                
         withShape cubeShape $ do
             Uniforms{..} <- asks sUniforms
             uniformM44 uProjectionView (projection !*! view)

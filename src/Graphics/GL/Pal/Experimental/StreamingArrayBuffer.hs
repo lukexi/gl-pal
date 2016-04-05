@@ -60,8 +60,11 @@ resetSABBuffer StreamingArrayBuffer{..} _ =
         nullPtr
         GL_STREAM_DRAW
 
-fillSABBuffer :: forall a m. (MonadIO m, Storable a) => StreamingArrayBuffer -> GLuint-> ArrayBuffer a -> (Int -> m a) -> m ()
-fillSABBuffer StreamingArrayBuffer{..} numInstances arrayBuffer  getItemForIndex = do
+-- Call from within writeSAB block
+fillSABBuffer :: forall a m. (MonadIO m, Storable a, MonadReader (StreamingArrayBuffer, GLuint) m) 
+              => ArrayBuffer a -> (Int -> m a) -> m ()
+fillSABBuffer arrayBuffer getItemForIndex = do
+    (StreamingArrayBuffer{..}, numInstances) <- ask
     streamOffset <- liftIO $ readIORef stbStreamOffsetRef
     -- get memory safely
     withArrayBuffer arrayBuffer $ do
@@ -101,7 +104,13 @@ drawSAB StreamingArrayBuffer{..} numInstances = do
     drawOffset <- liftIO $ readIORef stbDrawOffsetRef
     drawShapeInstancedBaseInstance numInstances drawOffset
 
---writeSAB sab numInstances resetInstanceBuffersAction fillActions = do
---	whenSABReset sab numInstances resetShapeInstanceBuffers
---	runReaderT fillActions (sab, numInstances)
---	updateSABOffsets sab numInstances
+writeSAB :: MonadIO m 
+         => StreamingArrayBuffer 
+         -> GLuint 
+         -> m a
+         -> ReaderT (StreamingArrayBuffer, GLuint) m a1
+         -> m ()
+writeSAB sab numInstances resetInstanceBuffersAction fillActions = do
+    whenSABReset sab numInstances resetInstanceBuffersAction
+    _ <- runReaderT fillActions (sab, numInstances)
+    updateSABOffsets sab numInstances
