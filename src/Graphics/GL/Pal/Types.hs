@@ -4,6 +4,7 @@
 module Graphics.GL.Pal.Types where
 
 import Graphics.GL
+import Linear.Extra
 import Data.Data
 
 -- | For texture data
@@ -15,7 +16,7 @@ newtype AttributeLocation   = AttributeLocation   { unAttributeLocation   :: GLi
 newtype TextureID           = TextureID           { unTextureID           :: GLuint } deriving Show
 
 newtype VertexArrayObject   = VertexArrayObject   { unVertexArrayObject   :: GLuint } deriving Show
-newtype ArrayBuffer         = ArrayBuffer         { unArrayBuffer         :: GLuint } deriving Show
+newtype ArrayBuffer a       = ArrayBuffer         { unArrayBuffer         :: GLuint } deriving Show
 newtype ElementArrayBuffer  = ElementArrayBuffer  { unElementArrayBuffer  :: GLuint } deriving Show
 newtype UniformBuffer       = UniformBuffer       { unUniformBuffer       :: GLuint } deriving Show
 
@@ -31,20 +32,20 @@ newtype UniformLocation a =
   deriving (Data, Typeable, Show)
 
 data Geometry = Geometry
-  { geoPositions     :: !ArrayBuffer
-  , geoNormals       :: !ArrayBuffer
-  , geoTangents      :: !ArrayBuffer
-  , geoUVs           :: !ArrayBuffer
+  { geoPositions     :: !(ArrayBuffer (V3 GLfloat))
+  , geoNormals       :: !(ArrayBuffer (V3 GLfloat))
+  , geoTangents      :: !(ArrayBuffer (V3 GLfloat))
+  , geoUVs           :: !(ArrayBuffer (V2 GLfloat))
   , geoIndices       :: !ElementArrayBuffer
   , geoVertCount     :: !GLsizei
   }
 
 data GeometryData = GeometryData
-  { gdPositions  :: ![ GLfloat ]
-  , gdNormals    :: ![ GLfloat ]
-  , gdTangents   :: ![ GLfloat ]
-  , gdUVs        :: ![ GLfloat ]
-  , gdIndices    :: ![ GLuint  ]
+  { gdPositions  :: ![ V3 GLfloat ]
+  , gdNormals    :: ![ V3 GLfloat ]
+  , gdTangents   :: ![ V3 GLfloat ]
+  , gdUVs        :: ![ V2 GLfloat ]
+  , gdIndices    :: ![ GLuint     ]
   , gdNumVerts   :: !GLsizei
   , gdNumPoints  :: !GLuint
   }

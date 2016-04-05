@@ -11,6 +11,7 @@ import Graphics.GL.Pal.WithActions
 import Control.Monad.Trans
 import qualified Data.Vector.Storable.Mutable as V
 import Data.Vector.Storable.Mutable (IOVector)
+import Data.Proxy
 
 genBuffer :: MonadIO m => m GLuint
 genBuffer = overPtr (glGenBuffers 1)
@@ -25,7 +26,7 @@ bindUniformBufferBase buffer bindingPoint =
         (unUniformBuffer buffer)
 
 
-newArrayBuffer :: MonadIO m => m ArrayBuffer
+newArrayBuffer :: MonadIO m => m (ArrayBuffer a)
 newArrayBuffer = ArrayBuffer <$> genBuffer
 
 newElementArrayBuffer :: MonadIO m => m ElementArrayBuffer
@@ -33,7 +34,7 @@ newElementArrayBuffer = ElementArrayBuffer <$> genBuffer
 
 -- | Buffers a list of floats using the given draw hint, e.g. GL_STATIC_DRAW
 -- and returns a reference to the ArrayBuffer where the data is stored
-bufferData :: forall a m. (Storable a, MonadIO m) => GLenum -> [a] -> m ArrayBuffer
+bufferData :: forall a m. (Storable a, MonadIO m) => GLenum -> [a] -> m (ArrayBuffer a)
 bufferData drawType values = do
   
     buffer <- newArrayBuffer
@@ -48,7 +49,7 @@ bufferData drawType values = do
     
     return buffer
 
-bufferDataV :: forall a m. (Storable a, MonadIO m) => GLenum -> IOVector a -> m ArrayBuffer
+bufferDataV :: forall a m. (Storable a, MonadIO m) => GLenum -> IOVector a -> m (ArrayBuffer a)
 bufferDataV drawType values = do
 
     buffer <- newArrayBuffer
@@ -63,7 +64,20 @@ bufferDataV drawType values = do
   
     return buffer
 
-bufferSubDataV :: forall a m. (Storable a, MonadIO m) => ArrayBuffer -> IOVector a -> Int -> m ()
+bufferDataEmpty :: forall a m. (Storable a, MonadIO m) => GLenum -> Int -> Proxy a -> m (ArrayBuffer a)
+bufferDataEmpty drawType numItems _proxy = do
+
+    buffer <- newArrayBuffer
+  
+    withArrayBuffer buffer $ do
+    
+        let valuesSize = fromIntegral (sizeOf (undefined :: a) * numItems)
+    
+        glBufferData GL_ARRAY_BUFFER valuesSize nullPtr drawType
+  
+    return buffer
+
+bufferSubDataV :: forall a m. (Storable a, MonadIO m) => (ArrayBuffer a) -> IOVector a -> Int -> m ()
 bufferSubDataV buffer values count = do
 
     withArrayBuffer buffer $ do
@@ -91,7 +105,7 @@ bufferUniformData drawType values = do
   
     return buffer
 
-bufferSubData :: forall a m. (Storable a, MonadIO m) => ArrayBuffer -> [a] -> m ()
+bufferSubData :: forall a m. (Storable a, MonadIO m) => (ArrayBuffer a) -> [a] -> m ()
 bufferSubData buffer values = do
 
     withArrayBuffer buffer $ do

@@ -10,7 +10,6 @@ import Graphics.GL.Pal.Geometry
 
 import Linear       hiding (trace  )
 import Control.Lens hiding (indices)
-import Data.Foldable
 import Control.Monad.Trans
 
 planeData :: V2 GLfloat -> V3 GLfloat -> V3 GLfloat -> V2 Int -> GeometryData
@@ -18,7 +17,7 @@ planeData size normal up subdivisions = GeometryData{..}
 
   where
 
-    gdNumVerts    = 3 * 2 * (fI subdivisionsX ) * (fI subdivisionsY)
+    gdNumVerts    = 3 * 2 * fI subdivisionsX * fI subdivisionsY
     gdNumPoints   = (fI subdivisionsX + 1) * (fI subdivisionsY + 1)
 
     subdivisionsX = subdivisions ^. _x 
@@ -30,8 +29,8 @@ planeData size normal up subdivisions = GeometryData{..}
     tangent       = normalize $ cross normal up 
     binormal      = normalize $ cross tangent normal
     
-    gdNormals     = take (fI gdNumPoints * 3) $ cycle [ normal  ^. _x , normal  ^. _y , normal  ^. _z ]
-    gdTangents    = take (fI gdNumPoints * 3) $ cycle [ tangent ^. _x , tangent ^. _y , tangent ^. _z ]
+    gdNormals     = take (fI gdNumPoints) $ cycle [ normal ]
+    gdTangents    = take (fI gdNumPoints) $ cycle [ tangent ]
 
     gdPositions   = makePlanePositions sizeX sizeY tangent binormal subdivisionsX subdivisionsY
     gdUVs         = makePlaneUVs                                    subdivisionsX subdivisionsY
@@ -42,12 +41,12 @@ planeGeometry :: MonadIO m => V2 GLfloat -> V3 GLfloat -> V3 GLfloat -> V2 Int -
 planeGeometry size normal up subdivisions = geometryFromData $ planeData size normal up subdivisions 
 
 
-makePlanePositions :: GLfloat -> GLfloat -> V3 GLfloat -> V3 GLfloat -> Int -> Int -> [GLfloat]
+makePlanePositions :: GLfloat -> GLfloat -> V3 GLfloat -> V3 GLfloat -> Int -> Int -> [V3 GLfloat]
 makePlanePositions xSize ySize xVec yVec subdivisionsX subdivisionsY = positions
   where
 
-    positions = concat [ getPoint x y | x <- [ 0 .. subdivisionsX ] , y <- [ 0 .. subdivisionsY ] ]
-    getPoint x y =  toList p
+    positions = [ getPoint x y | x <- [ 0 .. subdivisionsX ] , y <- [ 0 .. subdivisionsY ] ]
+    getPoint x y =  p
       where 
         p = xVec * (fI x / fI subdivisionsX) * (realToFrac xSize)
           + yVec * (fI y / fI subdivisionsY) * (realToFrac ySize)
@@ -56,12 +55,12 @@ makePlanePositions xSize ySize xVec yVec subdivisionsX subdivisionsY = positions
 
 
 
-makePlaneUVs :: Int -> Int -> [GLfloat]
+makePlaneUVs :: Int -> Int -> [V2 GLfloat]
 makePlaneUVs subdivisionsX subdivisionsY = uvs
   where
 
-    uvs = concat [getPoint x y | x <- [0..subdivisionsX], y <- [0..subdivisionsY]]
-    getPoint x y = toList p
+    uvs = [getPoint x y | x <- [0..subdivisionsX], y <- [0..subdivisionsY]]
+    getPoint x y = p
       where 
         p = V2 (fI x  / fI subdivisionsX)  (fI y / fI subdivisionsY)
 
