@@ -28,7 +28,7 @@ assignFloatAttribute' instanced prog attributeName attributeType attributeLength
   
     -- Gets the attribute for the program we have passed in
     attribute <- getShaderAttribute prog attributeName
-    liftIO (print (attributeName, attribute))
+    --liftIO (print (attributeName, attribute))
   
     -- Describe our array to OpenGL
     enableVertexAttribArray attribute
@@ -53,7 +53,7 @@ assignMatrixAttributeInstanced prog attributeName attributeType = do
   
     -- Gets the attribute for the program we have passed in
     baseAttribute <- getShaderAttribute prog attributeName
-    liftIO (print (attributeName, baseAttribute))
+    --liftIO (print (attributeName, baseAttribute))
   
     -- Describe our array to OpenGL
     

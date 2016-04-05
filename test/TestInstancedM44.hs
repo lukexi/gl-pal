@@ -45,17 +45,19 @@ main = do
   
     transformsVector <- VM.replicate numInstances (identity :: M44 GLfloat)
     colorsVector     <- VM.replicate numInstances (V4 0 0 0 0 :: V4 GLfloat)
-    positionsBuffer    <- bufferDataV GL_DYNAMIC_DRAW transformsVector
-    colorsBuffer       <- bufferDataV GL_DYNAMIC_DRAW colorsVector
+    transformsBuffer <- bufferDataV GL_DYNAMIC_DRAW transformsVector
+    colorsBuffer     <- bufferDataV GL_DYNAMIC_DRAW colorsVector
     withShape cubeShape $ do
-        withArrayBuffer positionsBuffer $ 
+        withArrayBuffer transformsBuffer $ 
             assignMatrixAttributeInstanced shader "aInstanceTransform" GL_FLOAT
         withArrayBuffer colorsBuffer $ 
             assignFloatAttributeInstanced shader "aInstanceColor" GL_FLOAT 4
     glEnable GL_DEPTH_TEST
     glClearColor 0.0 0.0 0.1 1
-  
+    
     whileWindow win $ do
+        liftIO performMinorGC
+
         processEvents events $ closeOnEscape win
 
         projection <- getWindowProjection win 45 0.1 1000
@@ -71,7 +73,7 @@ main = do
             loop numInstances (\i -> VM.write transformsVector i (generateTransforms t i))
             loop numInstances (\i -> VM.write colorsVector i (generateColors t i))
 
-        bufferSubDataV positionsBuffer transformsVector
+        bufferSubDataV transformsBuffer transformsVector
         bufferSubDataV colorsBuffer    colorsVector
         
         withShape cubeShape $ do

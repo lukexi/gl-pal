@@ -63,12 +63,12 @@ bufferDataV drawType values = do
   
     return buffer
 
-bufferSubDataV :: forall a m. (Storable a, MonadIO m) => ArrayBuffer -> IOVector a -> m ()
-bufferSubDataV buffer values = do
+bufferSubDataV :: forall a m. (Storable a, MonadIO m) => ArrayBuffer -> IOVector a -> Int -> m ()
+bufferSubDataV buffer values count = do
 
     withArrayBuffer buffer $ do
   
-        let valuesSize = fromIntegral (sizeOf (undefined :: a) * V.length values)
+        let valuesSize = fromIntegral (sizeOf (undefined :: a) * count)
     
         liftIO . V.unsafeWith values $ 
             \valuesPtr ->
