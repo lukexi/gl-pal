@@ -45,8 +45,8 @@ main = do
   
     transformsVector   <- VM.replicate numInstances (identity :: M44 GLfloat)
     colorsVector       <- VM.replicate numInstances (V4 0 0 0 0 :: V4 GLfloat)
-    positionsBuffer    <- bufferDataV GL_DYNAMIC_DRAW transformsVector
-    colorsBuffer       <- bufferDataV GL_DYNAMIC_DRAW colorsVector
+    positionsBuffer    <- bufferDataV GL_STREAM_DRAW transformsVector
+    colorsBuffer       <- bufferDataV GL_STREAM_DRAW colorsVector
     withShape cubeShape $ do
         withArrayBuffer positionsBuffer $ 
             assignMatrixAttributeInstanced shader "aInstanceTransform" GL_FLOAT

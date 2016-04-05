@@ -66,6 +66,7 @@ data MultisampleFramebuffer = MultisampleFramebuffer
     , mfbHeight :: GLint
     }
 
+createMultisampleFramebuffer :: MonadIO m => GLsizei -> GLsizei -> m MultisampleFramebuffer
 createMultisampleFramebuffer sizeX sizeY = do
     renderFramebufferID <- overPtr (glGenFramebuffers 1)
     glBindFramebuffer GL_FRAMEBUFFER renderFramebufferID
@@ -107,6 +108,7 @@ createMultisampleFramebuffer sizeX sizeY = do
         , mfbHeight = sizeY
         }
 
+withMultisamplingFramebuffer :: MonadIO m => MultisampleFramebuffer -> m a -> m ()
 withMultisamplingFramebuffer MultisampleFramebuffer{..} action = do
 
     glEnable GL_MULTISAMPLE

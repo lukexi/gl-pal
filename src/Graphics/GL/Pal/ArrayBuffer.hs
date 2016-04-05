@@ -11,6 +11,7 @@ import Graphics.GL.Pal.WithActions
 import Control.Monad.Trans
 import qualified Data.Vector.Storable.Mutable as V
 import Data.Vector.Storable.Mutable (IOVector)
+import Data.Proxy
 
 genBuffer :: MonadIO m => m GLuint
 genBuffer = overPtr (glGenBuffers 1)
@@ -60,6 +61,19 @@ bufferDataV drawType values = do
         liftIO . V.unsafeWith values $ 
             \valuesPtr ->
                 glBufferData GL_ARRAY_BUFFER valuesSize (castPtr valuesPtr) drawType
+  
+    return buffer
+
+bufferDataEmpty :: forall a m. (Storable a, MonadIO m) => GLenum -> Int -> Proxy a -> m ArrayBuffer
+bufferDataEmpty drawType numItems _proxy = do
+
+    buffer <- newArrayBuffer
+  
+    withArrayBuffer buffer $ do
+    
+        let valuesSize = fromIntegral (sizeOf (undefined :: a) * numItems)
+    
+        glBufferData GL_ARRAY_BUFFER valuesSize nullPtr drawType
   
     return buffer
 
