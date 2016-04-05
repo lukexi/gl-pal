@@ -28,6 +28,18 @@ data StreamingArrayBuffer = StreamingArrayBuffer
     , stbDrawOffsetRef   :: IORef GLuint
     }
 
+-- FIXME: should have makeSAB take a maxInstanceCount and a multiplier to make it clear that
+-- it is critical to pass a decently sized multiplier of maxInstanceCount to get the most
+-- benefit; otherwise you'll be reallocating buffers on every render.
+-- Have makeSAB work like this for creating the buffers:
+-- (transforms, colors) <- makeSAB maxInstanceCount 16 $ \addSABBuffer -> do
+--      transforms <- addSABBuffer (Proxy :: Proxy (M44 GLfloat))
+--      colors     <- addSABBuffer (Proxy :: Proxy (M44 GLfloat))
+--      return (transforms, colors)
+-- where addSABBuffer is a partially-applied call to
+-- bufferDataEmpty GL_STREAM_DRAW streamingBufferCapacity
+-- so that the buffers are all sized correctly!
+
 makeSAB :: (MonadIO m, Integral a) => a -> m StreamingArrayBuffer
 makeSAB streamingBufferCapacity = liftIO $ do
 

@@ -45,7 +45,7 @@ main = do
     cubeShape     <- makeShape cubeGeo shader
     
 
-    sab <- makeSAB streamingBufferCapacity
+    sab              <- makeSAB streamingBufferCapacity
     transformsBuffer <- bufferDataEmpty GL_STREAM_DRAW streamingBufferCapacity (Proxy :: Proxy (M44 GLfloat))
     colorsBuffer     <- bufferDataEmpty GL_STREAM_DRAW streamingBufferCapacity (Proxy :: Proxy (V4  GLfloat))
     
