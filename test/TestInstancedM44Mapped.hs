@@ -11,8 +11,6 @@ import Control.Monad.Reader
 import Data.Time
 import Foreign
 import Data.IORef
-import Data.List
-import qualified Data.Vector.Storable.Mutable as VM
 
 
 data StreamingArrayBuffer = StreamingArrayBuffer 
@@ -66,7 +64,7 @@ updateSAB shape arrayBuffer StreamingArrayBuffer{..} numInstances getItemForInde
     withArrayBuffer arrayBuffer $ do
         print (streamOffset, numNewItems)
         bufferPtr <- castPtr <$> glMapBufferRange GL_ARRAY_BUFFER 
-                                                  (fromIntegral streamOffset) 
+                                                  (fromIntegral streamOffset * fromIntegral (sizeOf (undefined :: a))) 
                                                   (fromIntegral numNewItems * fromIntegral (sizeOf (undefined :: a)))
                                                   (GL_MAP_WRITE_BIT .|. GL_MAP_UNSYNCHRONIZED_BIT)
         let _ = bufferPtr :: Ptr a
@@ -82,7 +80,8 @@ updateSAB shape arrayBuffer StreamingArrayBuffer{..} numInstances getItemForInde
             pokeElemOff bufferPtr i item
 
         -- unmap buffer
-        glUnmapBuffer GL_ARRAY_BUFFER
+        _ <- glUnmapBuffer GL_ARRAY_BUFFER
+        return ()
      
     -- compute draw offset
     writeIORef stbDrawOffsetRef streamOffset
@@ -100,7 +99,7 @@ data Uniforms = Uniforms
     } deriving Data
 
 maxInstances :: Num a => a
-maxInstances = 1000
+maxInstances = 10000
 
 streamingBufferCapacity = maxInstances * 4
 
@@ -153,7 +152,7 @@ main = do
         
         let view = viewMatrix (V3 0 0 100) (axisAngle (V3 0 1 0) 0)
     
-        t <- (*10) . realToFrac . utctDayTime <$> getCurrentTime
+        t <- (*3) . realToFrac . utctDayTime <$> getCurrentTime
 
         updateSAB cubeShape transformsBuffer sab maxInstances (return . generateTransforms t)  
         
