@@ -36,6 +36,7 @@ library
     Graphics.GL.Pal.Uniforms
     Graphics.GL.Pal.WithActions
     Graphics.GL.Pal.Utility
+    Graphics.GL.Pal.Experimental.StreamingArrayBuffer
     Data.Colour.Extra
   build-depends:       
       base

@@ -13,6 +13,8 @@ import Graphics.GL.Pal.ArrayBuffer            as Exports
 import Graphics.GL.Pal.AssignAttribute        as Exports
 import Graphics.GL.Pal.Shape                  as Exports
 
+import Graphics.GL.Pal.Experimental.StreamingArrayBuffer as Exports
+
 import Graphics.GL.Pal.Geometries.Cube        as Exports
 import Graphics.GL.Pal.Geometries.Plane       as Exports
 import Graphics.GL.Pal.Geometries.Icosahedron as Exports
