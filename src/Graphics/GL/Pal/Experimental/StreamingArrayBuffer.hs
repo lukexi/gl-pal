@@ -40,6 +40,7 @@ data StreamingArrayBuffer = StreamingArrayBuffer
 -- bufferDataEmpty GL_STREAM_DRAW streamingBufferCapacity
 -- so that the buffers are all sized correctly!
 
+-- the call to resetShapeInstanceBuffers can probably be made friendlier too, automatically calling it once.
 makeSAB :: (MonadIO m, Integral a) => a -> m StreamingArrayBuffer
 makeSAB streamingBufferCapacity = liftIO $ do
 
@@ -52,9 +53,9 @@ makeSAB streamingBufferCapacity = liftIO $ do
         , stbCapacity        = fromIntegral streamingBufferCapacity
         }
 
-whenSABReset :: MonadIO m => StreamingArrayBuffer -> GLuint -> m a -> m ()
-whenSABReset StreamingArrayBuffer{..} numNewItems resetAction = do
-    streamOffset <- liftIO $ readIORef stbStreamOffsetRef
+whenSABReset :: MonadIO m => StreamingArrayBuffer -> GLuint -> IO () -> m ()
+whenSABReset StreamingArrayBuffer{..} numNewItems resetAction = liftIO $ do
+    streamOffset <- readIORef stbStreamOffsetRef
          
     -- orphan the buffer if full
     
@@ -62,7 +63,7 @@ whenSABReset StreamingArrayBuffer{..} numNewItems resetAction = do
         _ <- resetAction
 
         -- reset offset
-        liftIO $ writeIORef stbStreamOffsetRef 0
+        writeIORef stbStreamOffsetRef 0
 
 -- Must be called with an ArrayBuffer bound (e.g. withArrayBuffer)
 resetSABBuffer :: forall a m. (MonadIO m, Storable a) => StreamingArrayBuffer -> ArrayBuffer a -> m ()
@@ -119,7 +120,7 @@ drawSAB StreamingArrayBuffer{..} numInstances = do
 writeSAB :: MonadIO m 
          => StreamingArrayBuffer 
          -> GLuint 
-         -> m a
+         -> IO ()
          -> ReaderT (StreamingArrayBuffer, GLuint) m a1
          -> m ()
 writeSAB sab numInstances resetInstanceBuffersAction fillActions = do

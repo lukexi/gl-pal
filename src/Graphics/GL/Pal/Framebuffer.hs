@@ -68,18 +68,20 @@ data MultisampleFramebuffer = MultisampleFramebuffer
 
 createMultisampleFramebuffer :: MonadIO m => GLsizei -> GLsizei -> m MultisampleFramebuffer
 createMultisampleFramebuffer sizeX sizeY = do
+    let numSamples = 8
+
     renderFramebufferID <- overPtr (glGenFramebuffers 1)
     glBindFramebuffer GL_FRAMEBUFFER renderFramebufferID
 
     depthBufferID <- overPtr (glGenRenderbuffers 1)
     glBindRenderbuffer GL_RENDERBUFFER depthBufferID
 
-    glRenderbufferStorageMultisample GL_RENDERBUFFER 4 GL_DEPTH_COMPONENT32 sizeX sizeY
+    glRenderbufferStorageMultisample GL_RENDERBUFFER numSamples GL_DEPTH_COMPONENT32 sizeX sizeY
     glFramebufferRenderbuffer GL_FRAMEBUFFER GL_DEPTH_ATTACHMENT GL_RENDERBUFFER depthBufferID
 
     renderTextureID <- overPtr (glGenTextures 1)
     glBindTexture GL_TEXTURE_2D_MULTISAMPLE renderTextureID
-    glTexImage2DMultisample GL_TEXTURE_2D_MULTISAMPLE 4 GL_RGBA8 sizeX sizeY GL_TRUE
+    glTexImage2DMultisample GL_TEXTURE_2D_MULTISAMPLE numSamples GL_RGBA8 sizeX sizeY GL_TRUE
     glFramebufferTexture2D GL_FRAMEBUFFER GL_COLOR_ATTACHMENT0 GL_TEXTURE_2D_MULTISAMPLE renderTextureID 0
 
     resolveFramebufferID <- overPtr (glGenFramebuffers 1)

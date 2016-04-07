@@ -58,8 +58,6 @@ main = do
             withArrayBuffer colorsBuffer $ do
                 resetSABBuffer sab colorsBuffer
                 assignFloatAttributeInstanced  shader "aInstanceColor" GL_FLOAT 4
-
-    
     resetShapeInstanceBuffers
         
     glEnable GL_DEPTH_TEST
