@@ -68,14 +68,16 @@ uniformV2V uniform array = liftIO $ do
 
 uniformM44 :: MonadIO m => UniformLocation (M44 GLfloat) -> M44 GLfloat -> m ()
 uniformM44 uniform matrix = liftIO $ do
-    let mvpUniformLoc = unUniformLocation uniform
-    with (transpose matrix) $ \ptr ->
-        glUniformMatrix4fv mvpUniformLoc 1 GL_FALSE (castPtr (ptr :: Ptr (M44 GLfloat)))
+    let uniformLoc = unUniformLocation uniform
+        doTranspose = GL_TRUE
+    with matrix $ \ptr ->
+        glUniformMatrix4fv uniformLoc 1 doTranspose (castPtr (ptr :: Ptr (M44 GLfloat)))
 
 
 uniformM33 :: MonadIO m => UniformLocation (M33 GLfloat) -> M33 GLfloat -> m ()
 uniformM33 uniform matrix = liftIO $ do
-    let mvpUniformLoc = unUniformLocation uniform
-    with (transpose matrix) $ \ptr ->
-        glUniformMatrix3fv mvpUniformLoc 1 GL_FALSE (castPtr (ptr :: Ptr (M33 GLfloat)))
+    let uniformLoc = unUniformLocation uniform
+        doTranspose = GL_TRUE
+    with matrix $ \ptr ->
+        glUniformMatrix3fv uniformLoc 1 doTranspose (castPtr (ptr :: Ptr (M33 GLfloat)))
  
