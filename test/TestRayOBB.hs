@@ -19,8 +19,8 @@ main = do
   shader        <- createShaderProgram "test/geo.vert" "test/geo.frag"
   Uniforms{..}  <- acquireUniforms shader
 
-  icoGeo     <- icosahedronGeometry 0.5 5
-  icoShape   <- makeShape icoGeo shader
+  octaGeo    <- octahedronGeometry 0.5 5
+  octaShape  <- makeShape octaGeo shader
 
   cubeGeo    <- cubeGeometry (V3 2 1 1) 5
   cubeShape  <- (makeShape cubeGeo shader :: IO (Shape Uniforms))
@@ -29,7 +29,7 @@ main = do
   planeShape <- makeShape planeGeo shader
 
   let shapes = [ (cubeShape,  V3 (-1) 0 0, (V3 (-1)   (-0.5) (-0.5), V3 3 0.5 0.5))
-               , (icoShape ,  V3 1 0 0   , (V3 (-0.5) (-0.5) (-0.5), V3 0.5 0.5 0.5))
+               , (octaShape , V3 1 0 0   , (V3 (-0.5) (-0.5) (-0.5), V3 0.5 0.5 0.5))
                , (planeShape, V3 0 (-1) 0, (V3 (-0.5) (-0.5) 0     , V3 0.5 0.5 0))
                ]
 

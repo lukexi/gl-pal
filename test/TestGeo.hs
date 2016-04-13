@@ -7,9 +7,11 @@ import Data.Time
 
 import System.Random
 
+
+
 data Uniforms = Uniforms 
-  { uMVP :: UniformLocation (M44 GLfloat) 
-  } deriving Data
+    { uMVP :: UniformLocation (M44 GLfloat) 
+    } deriving Data
 
 main :: IO ()
 main = do
@@ -18,24 +20,31 @@ main = do
     shader        <- createShaderProgram "test/geo.vert" "test/geo.frag"
     Uniforms{..}  <- acquireUniforms shader
   
-    icoGeo     <- icosahedronGeometry 0.5 5
-    icoShape   <- makeShape icoGeo shader
-  
+    octaGeo     <- octahedronGeometry 0.5 0
+    octaShape   <- makeShape octaGeo shader
+
+    tetraGeo     <- tetrahedronGeometry 0.5
+    tetraShape   <- makeShape tetraGeo shader
+    
     cubeGeo    <- cubeGeometry 1 5
     cubeShape  <- (makeShape cubeGeo shader :: IO (Shape Uniforms))
     
     planeGeo   <- planeGeometry 1 (V3 0 0 1) (V3 0 1 0) 5
     planeShape <- makeShape planeGeo shader
-  
-    let shapes = [ (cubeShape, V3 (-1) 0 0)
-                 , (icoShape , V3 1 0 0)
-                 , (planeShape, V3 0 (-1) 0)
+    
+    let shapes = [ (cubeShape, V3 (-1) (-2) 0)
+                 , (octaShape , V3 (-1) 0 0)
+                 , (planeShape, V3 1 (-2) 0)
+                 , (tetraShape, V3 1 0 0)
                  ]
   
     (lineVAO, lineBuffer, lineVertCount) <- makeLine shader
   
     glEnable GL_DEPTH_TEST
     glClearColor 0.0 0.0 0.1 1
+
+    -- Wireframe
+    --glPolygonMode GL_FRONT_AND_BACK GL_LINE
   
     whileWindow win $ do
         projection <- getWindowProjection win 45 0.1 1000
@@ -88,7 +97,18 @@ makeLine shader = do
 randomVerts :: (Integral a, Fractional b, Random b) 
             => a -> IO [V3 b]
 randomVerts lineVertCount = forM [0..lineVertCount-1] $ \i -> do
-  let x = fromIntegral i / fromIntegral lineVertCount
-      x' = x * 2 - 1
-  y <- randomIO
-  return (V3 x' y 0)
+    let x = fromIntegral i / fromIntegral lineVertCount
+        x' = x * 2 - 1
+    y <- randomIO
+    return (V3 x' y 0)
+
+
+
+
+
+
+
+
+
+
+

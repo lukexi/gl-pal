@@ -25,7 +25,8 @@ library
     Graphics.GL.Pal.Shape
     Graphics.GL.Pal.Geometries.Cube
     Graphics.GL.Pal.Geometries.Plane
-    Graphics.GL.Pal.Geometries.Icosahedron
+    Graphics.GL.Pal.Geometries.Octahedron
+    Graphics.GL.Pal.Geometries.Tetrahedron
     Graphics.GL.Pal.Geometries.Line
     Graphics.GL.Pal.Geometry
     Graphics.GL.Pal.InferUniforms

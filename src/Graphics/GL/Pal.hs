@@ -17,7 +17,8 @@ import Graphics.GL.Pal.Experimental.StreamingArrayBuffer as Exports
 
 import Graphics.GL.Pal.Geometries.Cube        as Exports
 import Graphics.GL.Pal.Geometries.Plane       as Exports
-import Graphics.GL.Pal.Geometries.Icosahedron as Exports
+import Graphics.GL.Pal.Geometries.Octahedron  as Exports
+import Graphics.GL.Pal.Geometries.Tetrahedron as Exports
 import Graphics.GL.Pal.Geometries.Line        as Exports
 
 import Graphics.GL.Pal.InferUniforms          as Exports
