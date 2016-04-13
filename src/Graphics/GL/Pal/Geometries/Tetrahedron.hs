@@ -10,9 +10,9 @@ import Graphics.GL.Pal.Geometry
 import Linear       hiding (trace)
 import Control.Lens hiding (indices)
 import Data.Foldable
-import Control.Arrow
 import Control.Monad.Trans
 
+v3 :: Num a => (a, a, a) -> V3 a
 v3 (x,y,z) = V3 x y z 
 
 tetrahedronData :: GLfloat -> GeometryData

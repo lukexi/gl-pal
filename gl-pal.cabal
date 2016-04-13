@@ -23,6 +23,7 @@ library
     Graphics.GL.Pal.AssignAttribute
     Graphics.GL.Pal.Framebuffer
     Graphics.GL.Pal.Shape
+    Graphics.GL.Pal.Geometries.Shared
     Graphics.GL.Pal.Geometries.Cube
     Graphics.GL.Pal.Geometries.Plane
     Graphics.GL.Pal.Geometries.Octahedron

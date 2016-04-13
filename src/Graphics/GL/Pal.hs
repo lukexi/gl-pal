@@ -15,6 +15,7 @@ import Graphics.GL.Pal.Shape                  as Exports
 
 import Graphics.GL.Pal.Experimental.StreamingArrayBuffer as Exports
 
+import Graphics.GL.Pal.Geometries.Shared      as Exports
 import Graphics.GL.Pal.Geometries.Cube        as Exports
 import Graphics.GL.Pal.Geometries.Plane       as Exports
 import Graphics.GL.Pal.Geometries.Octahedron  as Exports
