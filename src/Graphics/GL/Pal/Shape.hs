@@ -50,18 +50,18 @@ withShape shape@Shape{..} action = do
 drawShape :: (MonadReader (Shape u) m, MonadIO m) => m ()
 drawShape = do
     Shape{..} <- ask
-    let vertCount = geoVertCount sGeometry
-    glDrawElements GL_TRIANGLES vertCount GL_UNSIGNED_INT nullPtr
+    let indexCount = geoIndexCount sGeometry
+    glDrawElements GL_TRIANGLES indexCount GL_UNSIGNED_INT nullPtr
 
 drawShapeInstanced :: (MonadReader (Shape u) m, MonadIO m) => GLsizei -> m ()
 drawShapeInstanced instanceCount = do
     Shape{..} <- ask
-    let vertCount = geoVertCount sGeometry
-    glDrawElementsInstanced GL_TRIANGLES vertCount GL_UNSIGNED_INT nullPtr instanceCount
+    let indexCount = geoIndexCount sGeometry
+    glDrawElementsInstanced GL_TRIANGLES indexCount GL_UNSIGNED_INT nullPtr instanceCount
 
 
 drawShapeInstancedBaseInstance :: (MonadReader (Shape u) m, MonadIO m) => GLsizei -> GLuint -> m ()
 drawShapeInstancedBaseInstance instanceCount baseInstance = do
     Shape{..} <- ask
-    let vertCount = geoVertCount sGeometry
-    glDrawElementsInstancedBaseInstance GL_TRIANGLES vertCount GL_UNSIGNED_INT nullPtr instanceCount baseInstance
+    let indexCount = geoIndexCount sGeometry
+    glDrawElementsInstancedBaseInstance GL_TRIANGLES indexCount GL_UNSIGNED_INT nullPtr instanceCount baseInstance

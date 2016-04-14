@@ -8,7 +8,8 @@ import Linear
 
 mergeGeometries :: [GeometryData] -> GeometryData
 mergeGeometries geoDatas =
-    let offsets = scanl (+) 0 (map gdNumPoints geoDatas)
+    let getIndexCount = fromIntegral . length . gdPositions
+        offsets = scanl (+) 0 (map getIndexCount geoDatas)
 
         shifted = map (uncurry shiftIndices) (zip offsets geoDatas)
 
@@ -18,8 +19,6 @@ mergeGeometries geoDatas =
         , gdUVs       = concatMap gdUVs       shifted
         , gdNormals   = concatMap gdNormals   shifted
         , gdTangents  = concatMap gdTangents  shifted
-        , gdNumVerts  = sum $ map gdNumVerts  shifted
-        , gdNumPoints = sum $ map gdNumPoints shifted
         }
 
 
@@ -28,6 +27,6 @@ shiftPoints shift geoData = geoData { gdPositions = newPositions }
   where
     newPositions = map (+ shift) (gdPositions geoData) 
 
-shiftIndices :: GLuint -> GeometryData -> GeometryData
-shiftIndices startIndex geoData = geoData { gdIndices = map (+ startIndex) (gdIndices geoData) }
+shiftIndices :: GLsizei -> GeometryData -> GeometryData
+shiftIndices startIndex geoData = geoData { gdIndices = map (+ (fromIntegral startIndex)) (gdIndices geoData) }
 

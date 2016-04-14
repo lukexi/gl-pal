@@ -16,10 +16,6 @@ planeData :: V2 GLfloat -> V3 GLfloat -> V3 GLfloat -> V2 Int -> GeometryData
 planeData size normal up subdivisions = GeometryData{..}
 
   where
-
-    gdNumVerts    = 3 * 2 * fI subdivisionsX * fI subdivisionsY
-    gdNumPoints   = (fI subdivisionsX + 1) * (fI subdivisionsY + 1)
-
     subdivisionsX = subdivisions ^. _x 
     subdivisionsY = subdivisions ^. _y 
 
@@ -29,8 +25,9 @@ planeData size normal up subdivisions = GeometryData{..}
     tangent       = normalize $ cross normal up 
     binormal      = normalize $ cross tangent normal
     
-    gdNormals     = take (fI gdNumPoints) $ cycle [ normal ]
-    gdTangents    = take (fI gdNumPoints) $ cycle [ tangent ]
+    numVerts      = fromIntegral (length gdPositions)
+    gdNormals     = replicate numVerts normal
+    gdTangents    = replicate numVerts tangent
 
     gdPositions   = makePlanePositions sizeX sizeY tangent binormal subdivisionsX subdivisionsY
     gdUVs         = makePlaneUVs                                    subdivisionsX subdivisionsY

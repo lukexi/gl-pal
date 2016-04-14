@@ -14,6 +14,6 @@ geometryFromData GeometryData{..} = do
     geoUVs         <- bufferData GL_STATIC_DRAW gdUVs
     geoIndices     <- bufferElementData gdIndices
     
-    let geoVertCount = gdNumVerts
+    let geoIndexCount = fromIntegral $ length gdIndices
   
     return Geometry{..}

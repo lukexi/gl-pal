@@ -37,7 +37,7 @@ data Geometry = Geometry
   , geoTangents      :: !(ArrayBuffer (V3 GLfloat))
   , geoUVs           :: !(ArrayBuffer (V2 GLfloat))
   , geoIndices       :: !ElementArrayBuffer
-  , geoVertCount     :: !GLsizei
+  , geoIndexCount     :: !GLsizei
   }
 
 data GeometryData = GeometryData
@@ -46,8 +46,6 @@ data GeometryData = GeometryData
   , gdTangents   :: ![ V3 GLfloat ]
   , gdUVs        :: ![ V2 GLfloat ]
   , gdIndices    :: ![ GLuint     ]
-  , gdNumVerts   :: !GLsizei
-  , gdNumPoints  :: !GLuint
   }
 
 data Shape u = Shape

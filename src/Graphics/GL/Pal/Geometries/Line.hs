@@ -15,10 +15,7 @@ lineData :: GLuint -> GeometryData
 lineData  subdivisions = GeometryData{..}
 
   where
-
-    gdNumVerts    = 2 * (( fromIntegral subdivisions ) - 1 )
-    gdNumPoints   = fromIntegral subdivisions
-
+      
     gdPositions   = makeLinePositions subdivisions
     gdUVs         = makeLineUVs       subdivisions
     gdIndices     = makeLineIndicies  subdivisions 

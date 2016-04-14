@@ -33,17 +33,12 @@ tetrahedronData size = GeometryData{..}
                     , V3 1 2 3 -- right
                     , V3 2 0 3 -- left
                     ]
-
-    (newVertList , newFaceList) =  (vertList, faceList)
-
-    gdNumVerts  = 3 * fromIntegral (length newFaceList) 
-    gdNumPoints = 3 * fromIntegral (length newVertList)
-
-    gdPositions   = makeTetrahedronPositions size newVertList
-    gdUVs         = makeTetrahedronUVs            newVertList
-    gdIndices     = makeTetrahedronIndices        newFaceList 
-    gdNormals     = makeTetrahedronNormals        newVertList
-    gdTangents    = makeTetrahedronTangents       newVertList
+    
+    gdPositions   = makeTetrahedronPositions size vertList
+    gdUVs         = makeTetrahedronUVs            vertList
+    gdIndices     = makeTetrahedronIndices        faceList 
+    gdNormals     = makeTetrahedronNormals        vertList
+    gdTangents    = makeTetrahedronTangents       vertList
 
 
 makeTetrahedronPositions :: GLfloat -> [V3 GLfloat] -> [V3 GLfloat]

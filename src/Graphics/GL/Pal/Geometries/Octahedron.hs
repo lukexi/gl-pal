@@ -38,11 +38,8 @@ octahedronData size subdivisions = GeometryData{..}
                     ]
 
 
-    (newVertList , newFaceList) = subdivide (vertList, faceList) subdivisions
-
-    gdNumVerts  = 3 * fromIntegral (length newFaceList) 
-    gdNumPoints = 3 * fromIntegral (length newVertList)
-
+    (newVertList, newFaceList) = subdivide (vertList, faceList) subdivisions
+    
     gdPositions   = makeOctahedronPositions size newVertList
     gdUVs         = makeOctahedronUVs            newVertList
     gdIndices     = makeOctahedronIndices        newFaceList 
