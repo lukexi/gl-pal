@@ -28,21 +28,21 @@ assignFloatAttribute' instanced prog attributeName attributeType attributeLength
   
     -- Gets the attribute for the program we have passed in
     attribute <- getShaderAttribute prog attributeName
-    --liftIO (print (attributeName, attribute))
-  
-    -- Describe our array to OpenGL
-    enableVertexAttribArray attribute
     
-    glVertexAttribPointer
-        (fromIntegral (unAttributeLocation attribute)) -- attribute
-        attributeLength   -- number of elements per vertex, e.g. (x,y,z)
-        attributeType     -- the type of each element
-        GL_FALSE          -- don't normalize
-        0                 -- no extra data between each position
-        nullPtr           -- offset of first element
-  
-    when instanced $ 
-        vertexAttribDivisor attribute 1
+    unless (unAttributeLocation attribute == -1) $ do
+        -- Describe our array to OpenGL
+        enableVertexAttribArray attribute
+        
+        glVertexAttribPointer
+            (fromIntegral (unAttributeLocation attribute)) -- attribute
+            attributeLength   -- number of elements per vertex, e.g. (x,y,z)
+            attributeType     -- the type of each element
+            GL_FALSE          -- don't normalize
+            0                 -- no extra data between each position
+            nullPtr           -- offset of first element
+      
+        when instanced $ 
+            vertexAttribDivisor attribute 1
   
 
 assignMatrixAttributeInstanced :: MonadIO m => Program -> String -> GLenum -> m ()
@@ -87,19 +87,21 @@ assignIntegerAttribute' instanced prog attributeName attributeType attributeLeng
   
     -- Gets the attribute for the program we have passed in
     attribute <- getShaderAttribute prog attributeName
-  
-    -- Describe our array to OpenGL
-    enableVertexAttribArray attribute
-  
-    glVertexAttribIPointer
-        (fromIntegral (unAttributeLocation attribute)) -- attribute
-        attributeLength   -- number of elements per vertex, e.g. (x,y,z)
-        attributeType     -- the type of each element
-        0                 -- no extra data between each position
-        nullPtr           -- offset of first element
-  
-    when instanced $ 
-        vertexAttribDivisor attribute 1
+
+    unless (unAttributeLocation attribute == -1) $ do
+
+        -- Describe our array to OpenGL
+        enableVertexAttribArray attribute
+      
+        glVertexAttribIPointer
+            (fromIntegral (unAttributeLocation attribute)) -- attribute
+            attributeLength   -- number of elements per vertex, e.g. (x,y,z)
+            attributeType     -- the type of each element
+            0                 -- no extra data between each position
+            nullPtr           -- offset of first element
+      
+        when instanced $ 
+            vertexAttribDivisor attribute 1
 
 vertexAttribDivisor :: MonadIO m => AttributeLocation -> GLuint -> m ()
 vertexAttribDivisor attribute = glVertexAttribDivisor (fromIntegral (unAttributeLocation attribute))
