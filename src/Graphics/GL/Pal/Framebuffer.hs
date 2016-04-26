@@ -46,11 +46,11 @@ createFramebuffer sizeX sizeY = do
   
     -- Configure the depth buffer dimensions to match the eye texture
     glBindRenderbuffer GL_RENDERBUFFER renderbuffer
-    glRenderbufferStorage GL_RENDERBUFFER GL_DEPTH_COMPONENT32 sizeX sizeY
+    glRenderbufferStorage GL_RENDERBUFFER GL_DEPTH32F_STENCIL8 sizeX sizeY
     glBindRenderbuffer GL_RENDERBUFFER 0
   
     -- Attach the render buffer as the depth target
-    glFramebufferRenderbuffer GL_FRAMEBUFFER GL_DEPTH_ATTACHMENT GL_RENDERBUFFER renderbuffer
+    glFramebufferRenderbuffer GL_FRAMEBUFFER GL_DEPTH_STENCIL_ATTACHMENT GL_RENDERBUFFER renderbuffer
   
     -- Unbind the framebuffer
     glBindFramebuffer GL_FRAMEBUFFER 0
@@ -76,8 +76,8 @@ createMultisampleFramebuffer sizeX sizeY = do
     depthBufferID <- overPtr (glGenRenderbuffers 1)
     glBindRenderbuffer GL_RENDERBUFFER depthBufferID
 
-    glRenderbufferStorageMultisample GL_RENDERBUFFER numSamples GL_DEPTH_COMPONENT32 sizeX sizeY
-    glFramebufferRenderbuffer GL_FRAMEBUFFER GL_DEPTH_ATTACHMENT GL_RENDERBUFFER depthBufferID
+    glRenderbufferStorageMultisample GL_RENDERBUFFER numSamples GL_DEPTH32F_STENCIL8 sizeX sizeY
+    glFramebufferRenderbuffer GL_FRAMEBUFFER GL_DEPTH_STENCIL_ATTACHMENT GL_RENDERBUFFER depthBufferID
 
     renderTextureID <- overPtr (glGenTextures 1)
     glBindTexture GL_TEXTURE_2D_MULTISAMPLE renderTextureID
