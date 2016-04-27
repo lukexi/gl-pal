@@ -117,9 +117,10 @@ updateSABOffsets  StreamingArrayBuffer{..} numInstances = liftIO $ do
 
 drawSAB :: (MonadIO m, MonadReader (Shape u) m) => StreamingArrayBuffer -> GLsizei -> m ()
 drawSAB StreamingArrayBuffer{..} numInstances = do
-    -- draw
-    drawOffset <- liftIO $ readIORef stbDrawOffsetRef
-    drawShapeInstancedBaseInstance numInstances drawOffset
+    when (numInstances > 0) $ do
+        -- draw
+        drawOffset <- liftIO $ readIORef stbDrawOffsetRef
+        drawShapeInstancedBaseInstance numInstances drawOffset
 
 writeSAB :: MonadIO m 
          => StreamingArrayBuffer 
@@ -128,6 +129,7 @@ writeSAB :: MonadIO m
          -> ReaderT (StreamingArrayBuffer, GLuint) m a1
          -> m ()
 writeSAB sab numInstances resetInstanceBuffersAction fillActions = do
-    whenSABReset sab numInstances resetInstanceBuffersAction
-    _ <- runReaderT fillActions (sab, numInstances)
-    updateSABOffsets sab numInstances
+    when (numInstances > 0) $ do
+        whenSABReset sab numInstances resetInstanceBuffersAction
+        _ <- runReaderT fillActions (sab, numInstances)
+        updateSABOffsets sab numInstances
