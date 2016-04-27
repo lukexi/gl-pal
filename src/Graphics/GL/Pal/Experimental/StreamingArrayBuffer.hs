@@ -79,17 +79,21 @@ fillSABBuffer :: forall a m. (MonadIO m, Storable a, MonadReader (StreamingArray
 fillSABBuffer arrayBuffer getItemForIndex = do
     (StreamingArrayBuffer{..}, numInstances) <- ask
     streamOffset <- liftIO $ readIORef stbStreamOffsetRef
+    let elementSize = fromIntegral (sizeOf (undefined :: a))
     -- get memory safely
     withArrayBuffer arrayBuffer $ do
         bufferPtr <- castPtr <$> glMapBufferRange GL_ARRAY_BUFFER 
-                                                  (fromIntegral streamOffset * fromIntegral (sizeOf (undefined :: a))) 
-                                                  (fromIntegral numInstances * fromIntegral (sizeOf (undefined :: a)))
+                                                  (fromIntegral streamOffset * elementSize) 
+                                                  (fromIntegral numInstances * elementSize)
                                                   (GL_MAP_WRITE_BIT .|. GL_MAP_UNSYNCHRONIZED_BIT)
         let _ = bufferPtr :: Ptr a
 
         -- make sure memory is mapped
-        when (bufferPtr == nullPtr) $
-            error "Failed to map buffer."
+        when (bufferPtr == nullPtr) $ do
+            error $ 
+                "Failed to map buffer at streamOffset " ++ show streamOffset 
+                ++ " of count " ++ show numInstances
+                ++ " of size " ++ show elementSize
         
         -- set final data
         loopM (fromIntegral numInstances) $ \i -> do 
