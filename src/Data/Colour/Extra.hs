@@ -6,7 +6,7 @@ import Linear
 
 
 
-colorRGBA :: GLfloat -> GLfloat -> GLfloat -> GLFloat -> V4 GLfloat
+colorRGBA :: GLfloat -> GLfloat -> GLfloat -> GLfloat -> V4 GLfloat
 colorRGBA = V4
 
 colorHSLA :: GLfloat -> GLfloat -> GLfloat -> GLfloat -> V4 GLfloat
