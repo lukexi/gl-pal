@@ -42,8 +42,8 @@ profileMS  = profileInUnits nsToMS "ms"
 profileS :: MonadIO m => String -> Int -> m b -> m b
 profileS   = profileInUnits nsToS "s"
 
-profile :: MonadIO m => String -> Int -> m b -> m b
-profile = profileMS 
+--profile :: MonadIO m => String -> Int -> m b -> m b
+--profile = profileMS
 
 getNow :: (Fractional a, MonadIO m) => m a
 getNow = realToFrac . utctDayTime <$> liftIO getCurrentTime
