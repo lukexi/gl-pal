@@ -19,7 +19,7 @@ withFramebuffer framebuffer action = do
 createFramebufferTexture :: MonadIO m => GLsizei -> GLsizei -> m GLuint
 createFramebufferTexture sizeX sizeY = do
     texID <- overPtr (glGenTextures 1)
-    
+
     glBindTexture   GL_TEXTURE_2D texID
     glTexParameteri GL_TEXTURE_2D GL_TEXTURE_MIN_FILTER GL_LINEAR
     glTexParameteri GL_TEXTURE_2D GL_TEXTURE_MAG_FILTER GL_LINEAR
@@ -27,34 +27,34 @@ createFramebufferTexture sizeX sizeY = do
     glTexParameteri GL_TEXTURE_2D GL_TEXTURE_WRAP_T GL_CLAMP_TO_BORDER
     glTexStorage2D  GL_TEXTURE_2D 1 GL_RGBA8 sizeX sizeY
     glBindTexture   GL_TEXTURE_2D 0
-    
+
     return texID
 
 -- | Create the framebuffer we'll render into and pass to the Oculus SDK
 createFramebuffer :: MonadIO m => GLsizei -> GLsizei -> m (GLuint, GLuint)
 createFramebuffer sizeX sizeY = do
     framebufferTexture <- createFramebufferTexture sizeX sizeY
-  
+
     framebuffer <- overPtr (glGenFramebuffers 1)
-  
+
     -- Attach the eye texture as the color buffer
     glBindFramebuffer GL_FRAMEBUFFER framebuffer
     glFramebufferTexture2D GL_FRAMEBUFFER GL_COLOR_ATTACHMENT0 GL_TEXTURE_2D framebufferTexture 0
-  
+
     -- Generate a render buffer for depth
     renderbuffer <- overPtr (glGenRenderbuffers 1)
-  
+
     -- Configure the depth buffer dimensions to match the eye texture
     glBindRenderbuffer GL_RENDERBUFFER renderbuffer
     glRenderbufferStorage GL_RENDERBUFFER GL_DEPTH32F_STENCIL8 sizeX sizeY
     glBindRenderbuffer GL_RENDERBUFFER 0
-  
+
     -- Attach the render buffer as the depth target
     glFramebufferRenderbuffer GL_FRAMEBUFFER GL_DEPTH_STENCIL_ATTACHMENT GL_RENDERBUFFER renderbuffer
-  
+
     -- Unbind the framebuffer
     glBindFramebuffer GL_FRAMEBUFFER 0
-  
+
     return (framebuffer, framebufferTexture)
 
 data MultisampleFramebuffer = MultisampleFramebuffer
@@ -68,7 +68,8 @@ data MultisampleFramebuffer = MultisampleFramebuffer
 
 createMultisampleFramebuffer :: MonadIO m => GLsizei -> GLsizei -> m MultisampleFramebuffer
 createMultisampleFramebuffer sizeX sizeY = do
-    let numSamples = 8
+    --let numSamples = 8
+    let numSamples = 16
 
     renderFramebufferID <- overPtr (glGenFramebuffers 1)
     glBindFramebuffer GL_FRAMEBUFFER renderFramebufferID
@@ -87,7 +88,7 @@ createMultisampleFramebuffer sizeX sizeY = do
     resolveFramebufferID <- overPtr (glGenFramebuffers 1)
     glBindFramebuffer GL_FRAMEBUFFER resolveFramebufferID
 
-    resolveTextureID <- overPtr (glGenTextures 1) 
+    resolveTextureID <- overPtr (glGenTextures 1)
     glBindTexture GL_TEXTURE_2D resolveTextureID
     glTexParameteri GL_TEXTURE_2D GL_TEXTURE_MIN_FILTER GL_LINEAR
     glTexParameteri GL_TEXTURE_2D GL_TEXTURE_MAX_LEVEL 0
@@ -96,13 +97,13 @@ createMultisampleFramebuffer sizeX sizeY = do
 
     -- check FBO status
     status <- glCheckFramebufferStatus GL_FRAMEBUFFER
-    when (status /= GL_FRAMEBUFFER_COMPLETE) $ 
+    when (status /= GL_FRAMEBUFFER_COMPLETE) $
         error "createMultisampleFramebuffer: Framebuffer status incomplete"
 
     glBindFramebuffer GL_FRAMEBUFFER 0
 
-    return MultisampleFramebuffer 
-        { mfbRenderFramebufferID = Framebuffer renderFramebufferID 
+    return MultisampleFramebuffer
+        { mfbRenderFramebufferID = Framebuffer renderFramebufferID
         , mfbRenderTextureID = TextureID renderTextureID
         , mfbResolveFramebufferID = Framebuffer resolveFramebufferID
         , mfbResolveTextureID = TextureID resolveTextureID
@@ -116,19 +117,19 @@ withMultisamplingFramebuffer MultisampleFramebuffer{..} action = do
     glEnable GL_MULTISAMPLE
 
     glBindFramebuffer GL_FRAMEBUFFER (unFramebuffer mfbRenderFramebufferID)
-    
+
     _ <- action
 
     glBindFramebuffer GL_FRAMEBUFFER 0
-    
+
     glDisable GL_MULTISAMPLE
-        
+
     glBindFramebuffer GL_READ_FRAMEBUFFER (unFramebuffer mfbRenderFramebufferID)
     glBindFramebuffer GL_DRAW_FRAMEBUFFER (unFramebuffer mfbResolveFramebufferID)
 
-    glBlitFramebuffer 0 0 mfbWidth mfbHeight 0 0 mfbWidth mfbHeight 
+    glBlitFramebuffer 0 0 mfbWidth mfbHeight 0 0 mfbWidth mfbHeight
         GL_COLOR_BUFFER_BIT
         GL_LINEAR
 
     glBindFramebuffer GL_READ_FRAMEBUFFER 0
-    glBindFramebuffer GL_DRAW_FRAMEBUFFER 0 
+    glBindFramebuffer GL_DRAW_FRAMEBUFFER 0
