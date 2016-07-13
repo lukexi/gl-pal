@@ -66,10 +66,22 @@ data MultisampleFramebuffer = MultisampleFramebuffer
     , mfbHeight :: GLint
     }
 
-createMultisampleFramebuffer :: MonadIO m => GLsizei -> GLsizei -> m MultisampleFramebuffer
-createMultisampleFramebuffer sizeX sizeY = do
-    --let numSamples = 8
-    let numSamples = 16
+data MSAASamples = MSAASamples1
+                 | MSAASamples2
+                 | MSAASamples4
+                 | MSAASamples8
+                 | MSAASamples16
+
+msaaSamplesToNum :: MSAASamples -> GLsizei
+msaaSamplesToNum MSAASamples1 = 1
+msaaSamplesToNum MSAASamples2 = 2
+msaaSamplesToNum MSAASamples4 = 4
+msaaSamplesToNum MSAASamples8 = 8
+msaaSamplesToNum MSAASamples16 = 16
+
+createMultisampleFramebuffer :: MonadIO m => MSAASamples -> GLsizei -> GLsizei -> m MultisampleFramebuffer
+createMultisampleFramebuffer msaaSamples sizeX sizeY = do
+    let numSamples = msaaSamplesToNum msaaSamples
 
     renderFramebufferID <- overPtr (glGenFramebuffers 1)
     glBindFramebuffer GL_FRAMEBUFFER renderFramebufferID
