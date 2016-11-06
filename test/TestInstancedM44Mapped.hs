@@ -37,7 +37,7 @@ generateColors t i = colorHSL hue 0.9 0.6
 
 main :: IO ()
 main = do
-    (win, events) <- reacquire 0 $ createWindow "Geometry Test" 1024 768
+    (win, _, events) <- reacquire 0 $ createWindow "Geometry Test" 1024 768
 
     shader        <- createShaderProgram "test/geoInstancedM44.vert" "test/geoInstancedM44.frag"
 
@@ -64,7 +64,8 @@ main = do
     glClearColor 0.0 0.0 0.1 1
 
     whileWindow win $ do
-        processEvents events $ closeOnEscape win
+        events <- gatherEvents events
+        forM_ events (closeOnEscape win)
 
         projection <- getWindowProjection win 45 0.1 1000
         (x,y,w,h)  <- getWindowViewport win

@@ -4,5 +4,4 @@ packages:
 - '../linear-extra'
 - '../glfw-pal'
 - '../halive'
-- '../bindings-GLFW'
-resolver: nightly-2016-02-02
+resolver: nightly-2016-08-17
