@@ -18,12 +18,16 @@ import Data.Foldable
 
 import Control.Lens
 
-uniformI :: MonadIO m => UniformLocation GLint -> GLint -> m () 
+uniformI :: MonadIO m => UniformLocation GLint -> GLint -> m ()
 uniformI uniform int   = glUniform1i (unUniformLocation uniform) int
 
-uniformF :: MonadIO m => UniformLocation GLfloat -> GLfloat -> m () 
+uniformF :: MonadIO m => UniformLocation GLfloat -> GLfloat -> m ()
 uniformF uniform float = glUniform1f (unUniformLocation uniform) float
 
+uniformV2 :: MonadIO m => UniformLocation (V2 GLfloat) -> V2 GLfloat -> m ()
+uniformV2 uniform vec2 = glUniform2f (unUniformLocation uniform)
+                                     (vec2 ^. _x)
+                                     (vec2 ^. _y)
 
 uniformV3 :: MonadIO m => UniformLocation (V3 GLfloat) -> V3 GLfloat -> m ()
 uniformV3 uniform vec3 = glUniform3f (unUniformLocation uniform)
@@ -40,28 +44,28 @@ uniformV4 uniform vec4 = glUniform4f (unUniformLocation uniform)
 
 uniformV4V :: MonadIO m => UniformLocation [V4 GLfloat] -> [V4 GLfloat] -> m ()
 uniformV4V uniform array = liftIO $ do
-    
+
     let uniformLoc = unUniformLocation uniform
         finalArray = concatMap toList array
-  
+
     withArray finalArray $ \ptr ->
         glUniform4fv uniformLoc (fromIntegral (length array)) ptr
 
 uniformV3V :: MonadIO m => UniformLocation [V3 GLfloat] -> [V3 GLfloat] -> m ()
 uniformV3V uniform array = liftIO $ do
-    
+
     let uniformLoc = unUniformLocation uniform
         finalArray = concatMap toList array
-  
+
     withArray finalArray $ \ ptr ->
         glUniform3fv uniformLoc (fromIntegral (length array)) ptr
 
 uniformV2V :: MonadIO m => UniformLocation [V2 GLfloat] -> [V2 GLfloat] -> m ()
 uniformV2V uniform array = liftIO $ do
-    
+
     let uniformLoc = unUniformLocation uniform
         finalArray = concatMap toList array
-  
+
     withArray finalArray $ \ptr ->
         glUniform2fv uniformLoc (fromIntegral (length array)) ptr
 
@@ -80,4 +84,4 @@ uniformM33 uniform matrix = liftIO $ do
         doTranspose = GL_TRUE
     with matrix $ \ptr ->
         glUniformMatrix3fv uniformLoc 1 doTranspose (castPtr (ptr :: Ptr (M33 GLfloat)))
- 
+
