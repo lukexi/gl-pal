@@ -21,6 +21,7 @@ loadTexture path colorSpace = liftIO (JP.readImage path) >>= \case
     Right dimg -> createTexture colorSpace dimg
     Left e -> error e
 
+createTexture :: MonadIO m => ColorSpace -> JP.DynamicImage -> m TextureID
 createTexture colorSpace dimg  = do
     t <- overPtr (glGenTextures 1)
     glBindTexture GL_TEXTURE_2D t
@@ -53,11 +54,13 @@ createTexture colorSpace dimg  = do
 
     return (TextureID t)
 
+imageDims :: (Num t) => JP.DynamicImage -> (t, t)
 imageDims dimg =
     let width  = fromIntegral (JP.dynamicMap JP.imageWidth dimg)
         height = fromIntegral (JP.dynamicMap JP.imageHeight dimg)
     in (width, height)
 
+updateTexture :: MonadIO m => TextureID -> JP.DynamicImage -> m ()
 updateTexture (TextureID t) dimg = do
     glBindTexture GL_TEXTURE_2D t
     let (width, height) = imageDims dimg
