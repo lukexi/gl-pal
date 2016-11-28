@@ -58,6 +58,7 @@ library
     , stm
     , time
     , clock
+    , file-embed
   default-language:    Haskell2010
 
 test-suite geo

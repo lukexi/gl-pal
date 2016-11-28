@@ -11,6 +11,7 @@ import Data.Data
 data ColorSpace = SRGB | Linear
 
 newtype Program             = Program             { unProgram             :: GLuint } deriving Show
+newtype Shader              = Shader              { unShader              :: GLuint } deriving Show
 
 newtype AttributeLocation   = AttributeLocation   { unAttributeLocation   :: GLint  } deriving Show
 newtype TextureID           = TextureID           { unTextureID           :: GLuint } deriving Show
@@ -27,7 +28,7 @@ newtype UniformBlockBindingPoint = UniformBlockBindingPoint { unUniformBlockBind
 newtype UniformBlockIndex        = UniformBlockIndex        { unUniformBlockIndex        :: GLuint } deriving Show
 
 -- A UniformLocation is tagged with the type of the uniform it applies to.
-newtype UniformLocation a = 
+newtype UniformLocation a =
   UniformLocation { unUniformLocation :: GLint }
   deriving (Data, Typeable, Show)
 
