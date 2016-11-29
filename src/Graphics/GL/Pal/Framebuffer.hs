@@ -8,15 +8,15 @@ import Graphics.GL.Pal.Types
 import Control.Monad
 import Foreign
 
-withFramebuffer :: MonadIO m => GLuint -> m a -> m ()
-withFramebuffer framebuffer action = do
+withFramebuffer :: MonadIO m => Framebuffer -> m a -> m ()
+withFramebuffer (Framebuffer framebuffer) action = do
     glBindFramebuffer GL_FRAMEBUFFER framebuffer
     _ <- action
     glBindFramebuffer GL_FRAMEBUFFER 0
 
 
 -- | Create and configure the texture to use for our framebuffer
-createFramebufferTexture :: MonadIO m => GLsizei -> GLsizei -> m GLuint
+createFramebufferTexture :: MonadIO m => GLsizei -> GLsizei -> m TextureID
 createFramebufferTexture sizeX sizeY = do
     texID <- overPtr (glGenTextures 1)
 
@@ -28,18 +28,18 @@ createFramebufferTexture sizeX sizeY = do
     glTexStorage2D  GL_TEXTURE_2D 1 GL_RGBA8 sizeX sizeY
     glBindTexture   GL_TEXTURE_2D 0
 
-    return texID
+    return (TextureID texID)
 
 -- | Create the framebuffer we'll render into and pass to the Oculus SDK
-createFramebuffer :: MonadIO m => GLsizei -> GLsizei -> m (GLuint, GLuint)
+createFramebuffer :: MonadIO m => GLsizei -> GLsizei -> m (Framebuffer, TextureID)
 createFramebuffer sizeX sizeY = do
-    framebufferTexture <- createFramebufferTexture sizeX sizeY
+    TextureID framebufferTextureID <- createFramebufferTexture sizeX sizeY
 
     framebuffer <- overPtr (glGenFramebuffers 1)
 
     -- Attach the eye texture as the color buffer
     glBindFramebuffer GL_FRAMEBUFFER framebuffer
-    glFramebufferTexture2D GL_FRAMEBUFFER GL_COLOR_ATTACHMENT0 GL_TEXTURE_2D framebufferTexture 0
+    glFramebufferTexture2D GL_FRAMEBUFFER GL_COLOR_ATTACHMENT0 GL_TEXTURE_2D framebufferTextureID 0
 
     -- Generate a render buffer for depth
     renderbuffer <- overPtr (glGenRenderbuffers 1)
@@ -55,7 +55,7 @@ createFramebuffer sizeX sizeY = do
     -- Unbind the framebuffer
     glBindFramebuffer GL_FRAMEBUFFER 0
 
-    return (framebuffer, framebufferTexture)
+    return (Framebuffer framebuffer, TextureID framebufferTextureID)
 
 data MultisampleFramebuffer = MultisampleFramebuffer
     { mfbRenderFramebufferID :: Framebuffer
