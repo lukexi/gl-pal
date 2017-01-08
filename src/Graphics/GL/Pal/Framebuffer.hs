@@ -8,6 +8,9 @@ import Graphics.GL.Pal.Types
 import Control.Monad
 import Foreign
 
+bindFramebuffer :: MonadIO m => Framebuffer -> m ()
+bindFramebuffer (Framebuffer framebuffer) = glBindFramebuffer GL_FRAMEBUFFER framebuffer
+
 withFramebuffer :: MonadIO m => Framebuffer -> m a -> m ()
 withFramebuffer (Framebuffer framebuffer) action = do
     glBindFramebuffer GL_FRAMEBUFFER framebuffer
@@ -16,8 +19,8 @@ withFramebuffer (Framebuffer framebuffer) action = do
 
 
 -- | Create and configure the texture to use for our framebuffer
-createFramebufferTexture :: MonadIO m => GLsizei -> GLsizei -> m TextureID
-createFramebufferTexture sizeX sizeY = do
+createFramebufferTexture :: MonadIO m => GLenum -> GLsizei -> GLsizei -> m TextureID
+createFramebufferTexture storage sizeX sizeY = do
     texID <- overPtr (glGenTextures 1)
 
     glBindTexture   GL_TEXTURE_2D texID
@@ -25,37 +28,54 @@ createFramebufferTexture sizeX sizeY = do
     glTexParameteri GL_TEXTURE_2D GL_TEXTURE_MAG_FILTER GL_LINEAR
     glTexParameteri GL_TEXTURE_2D GL_TEXTURE_WRAP_S GL_CLAMP_TO_BORDER
     glTexParameteri GL_TEXTURE_2D GL_TEXTURE_WRAP_T GL_CLAMP_TO_BORDER
-    glTexStorage2D  GL_TEXTURE_2D 1 GL_RGBA8 sizeX sizeY
+    glTexStorage2D  GL_TEXTURE_2D 1 storage sizeX sizeY
     glBindTexture   GL_TEXTURE_2D 0
 
     return (TextureID texID)
 
--- | Create the framebuffer we'll render into and pass to the Oculus SDK
+newFramebuffer :: MonadIO m => m Framebuffer
+newFramebuffer = Framebuffer <$> overPtr (glGenFramebuffers 1)
+
+-- Create a flat render target with the given size and storage format (and no depth or stencil buffer)
+createRenderTexture :: MonadIO m => GLenum -> GLsizei -> GLsizei -> m (Framebuffer, TextureID)
+createRenderTexture storage sizeX sizeY = do
+    TextureID framebufferTextureID <- createFramebufferTexture storage sizeX sizeY
+
+    framebuffer <- newFramebuffer
+    withFramebuffer framebuffer $ do
+        -- Attach the texture as the color buffer
+        glFramebufferTexture2D GL_FRAMEBUFFER GL_COLOR_ATTACHMENT0 GL_TEXTURE_2D framebufferTextureID 0
+
+        -- Clear the texture
+        glClearColor 0 0 0 0
+        glClear GL_COLOR_BUFFER_BIT    
+
+    return (framebuffer, TextureID framebufferTextureID)
+
+-- | Create an RGBA8 framebuffer with 32-bit depth and 8-bit stencil buffer, suitable for 3D render-to-texture
 createFramebuffer :: MonadIO m => GLsizei -> GLsizei -> m (Framebuffer, TextureID)
 createFramebuffer sizeX sizeY = do
-    TextureID framebufferTextureID <- createFramebufferTexture sizeX sizeY
+    TextureID framebufferTextureID <- createFramebufferTexture GL_RGBA8 sizeX sizeY
 
-    framebuffer <- overPtr (glGenFramebuffers 1)
+    framebuffer <- newFramebuffer
 
     -- Attach the eye texture as the color buffer
-    glBindFramebuffer GL_FRAMEBUFFER framebuffer
-    glFramebufferTexture2D GL_FRAMEBUFFER GL_COLOR_ATTACHMENT0 GL_TEXTURE_2D framebufferTextureID 0
+    withFramebuffer framebuffer $ do
+        
+        glFramebufferTexture2D GL_FRAMEBUFFER GL_COLOR_ATTACHMENT0 GL_TEXTURE_2D framebufferTextureID 0
 
-    -- Generate a render buffer for depth
-    renderbuffer <- overPtr (glGenRenderbuffers 1)
+        -- Generate a render buffer for depth
+        renderbuffer <- overPtr (glGenRenderbuffers 1)
 
-    -- Configure the depth buffer dimensions to match the eye texture
-    glBindRenderbuffer GL_RENDERBUFFER renderbuffer
-    glRenderbufferStorage GL_RENDERBUFFER GL_DEPTH32F_STENCIL8 sizeX sizeY
-    glBindRenderbuffer GL_RENDERBUFFER 0
+        -- Configure the depth buffer dimensions to match the eye texture
+        glBindRenderbuffer GL_RENDERBUFFER renderbuffer
+        glRenderbufferStorage GL_RENDERBUFFER GL_DEPTH32F_STENCIL8 sizeX sizeY
+        glBindRenderbuffer GL_RENDERBUFFER 0
 
-    -- Attach the render buffer as the depth target
-    glFramebufferRenderbuffer GL_FRAMEBUFFER GL_DEPTH_STENCIL_ATTACHMENT GL_RENDERBUFFER renderbuffer
+        -- Attach the render buffer as the depth target
+        glFramebufferRenderbuffer GL_FRAMEBUFFER GL_DEPTH_STENCIL_ATTACHMENT GL_RENDERBUFFER renderbuffer
 
-    -- Unbind the framebuffer
-    glBindFramebuffer GL_FRAMEBUFFER 0
-
-    return (Framebuffer framebuffer, TextureID framebufferTextureID)
+    return (framebuffer, TextureID framebufferTextureID)
 
 data MultisampleFramebuffer = MultisampleFramebuffer
     { mfbRenderFramebufferID :: Framebuffer

@@ -238,6 +238,13 @@ buildNamedStrings includes tweak = liftIO $ when gl_ARB_shading_language_include
                     (fromIntegral $ BS.length body)
                     string
 
+-- |
+-- Registers a directory as containing shaders, and prefixes them with the directory so they're accessible as
+-- e.g. "/resources/mylib.h" (or just <mylib.h>)
+
+addShaderIncludeDir includeDir = 
+    getDir includeDir >>= \ss -> buildNamedStrings ss (("/"++includeDir++"/")++)
+
 -- | Compile a shader with @#include@ support (if available).
 --
 -- Remember to use

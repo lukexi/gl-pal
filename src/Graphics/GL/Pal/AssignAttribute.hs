@@ -14,20 +14,30 @@ integerTypes = [GL_BYTE, GL_UNSIGNED_BYTE, GL_SHORT, GL_UNSIGNED_SHORT, GL_INT, 
 enableVertexAttribArray :: MonadIO m => AttributeLocation -> m ()
 enableVertexAttribArray = glEnableVertexAttribArray . fromIntegral . unAttributeLocation
 
+-- Dynamically grab the attribute location from the given shader & attribute name
 assignFloatAttribute :: MonadIO m => Program -> String -> GLenum -> GLint -> m ()
-assignFloatAttribute = assignFloatAttribute' False
+assignFloatAttribute prog attributeName attributeType attributeLength = do
+    attribute <- getShaderAttribute prog attributeName
+    assignFloatAttributeFixed attribute attributeType attributeLength
 
 assignFloatAttributeInstanced :: MonadIO m => Program -> String -> GLenum -> GLint -> m ()
-assignFloatAttributeInstanced = assignFloatAttribute' True
+assignFloatAttributeInstanced prog attributeName attributeType attributeLength = do
+    attribute <- getShaderAttribute prog attributeName
+    assignFloatAttributeFixed attribute attributeType attributeLength
+    makeAttributeInstanced attribute    
 
-assignFloatAttribute' :: MonadIO m => Bool -> Program -> String -> GLenum -> GLint -> m ()
-assignFloatAttribute' instanced prog attributeName attributeType attributeLength = do
+-- Sets an attribute to support instancing. Be sure enableVertexAttribArray is called before this.
+makeAttributeInstanced :: MonadIO m => AttributeLocation -> m ()
+makeAttributeInstanced attribute = 
+    unless (unAttributeLocation attribute == -1) $ do
+        vertexAttribDivisor attribute 1
+
+-- Use a known attribute location.
+assignFloatAttributeFixed :: MonadIO m => AttributeLocation -> GLenum -> GLint -> m ()
+assignFloatAttributeFixed attribute attributeType attributeLength = do
   
     when (attributeType `elem` integerTypes) $ 
         liftIO . putStrLn $ "WARNING: Passed integer type " ++ show attributeType ++ " to assignFloatAttribute."
-  
-    -- Gets the attribute for the program we have passed in
-    attribute <- getShaderAttribute prog attributeName
     
     unless (unAttributeLocation attribute == -1) $ do
         -- Describe our array to OpenGL
@@ -40,10 +50,6 @@ assignFloatAttribute' instanced prog attributeName attributeType attributeLength
             GL_FALSE          -- don't normalize
             0                 -- no extra data between each position
             nullPtr           -- offset of first element
-      
-        when instanced $ 
-            vertexAttribDivisor attribute 1
-  
 
 assignMatrixAttributeInstanced :: MonadIO m => Program -> String -> GLenum -> m ()
 assignMatrixAttributeInstanced prog attributeName attributeType = do

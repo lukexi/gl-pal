@@ -14,7 +14,7 @@ newtype Program             = Program             { unProgram             :: GLu
 newtype Shader              = Shader              { unShader              :: GLuint } deriving Show
 
 newtype AttributeLocation   = AttributeLocation   { unAttributeLocation   :: GLint  } deriving Show
-newtype TextureID           = TextureID           { unTextureID           :: GLuint } deriving Show
+newtype TextureID           = TextureID           { unTextureID           :: GLuint } deriving (Show, Data)
 
 newtype VertexArrayObject   = VertexArrayObject   { unVertexArrayObject   :: GLuint } deriving Show
 newtype ArrayBuffer a       = ArrayBuffer         { unArrayBuffer         :: GLuint } deriving Show
