@@ -1,7 +1,9 @@
-flags: {}
+resolver: lts-8.0
 packages:
 - '.'
 - '../linear-extra'
-- '../glfw-pal'
+- '../sdl-pal'
 - '../halive'
-resolver: nightly-2016-08-17
+extra-deps:
+- gl-0.7.8.1
+allow-newer: True

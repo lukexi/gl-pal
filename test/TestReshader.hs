@@ -1,5 +1,6 @@
 {-# LANGUAGE RecordWildCards #-}
-import qualified Graphics.UI.GLFW as GLFW
+{-# LANGUAGE OverloadedStrings #-}
+import qualified SDL.GLFW as GLFW
 import Graphics.GL
 
 import Data.Bits
@@ -21,7 +22,7 @@ resY = 1080
 main :: IO a
 main = do
 
-    win      <- setupGLFW "GL Pal" resX resY
+    win      <- createGLWindow "GL Pal"
 
     cubeProg <- createReshaderProgram "test/cube.vert" "test/cube.frag"
     
@@ -30,8 +31,7 @@ main = do
     glClearColor 0 0.1 0.1 1
     glEnable GL_DEPTH_TEST
 
-    forever $ do
-        GLFW.pollEvents
+    whileWindow win $ \events -> do
 
         useProgram =<< cubeProg
 
@@ -49,6 +49,6 @@ main = do
 
         renderCube cube mvp
 
-        GLFW.swapBuffers win
+        glSwapWindow win
 
 

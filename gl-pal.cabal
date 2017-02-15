@@ -67,7 +67,7 @@ test-suite geo
   main-is:             TestGeo.hs
   build-depends:       base
                      , gl-pal
-                     , glfw-pal
+                     , sdl-pal
                      , linear-extra
                      , halive
                      , mtl
@@ -82,7 +82,7 @@ test-suite instanced
   main-is:             TestInstanced.hs
   build-depends:       base
                      , gl-pal
-                     , glfw-pal
+                     , sdl-pal
                      , linear-extra
                      , halive
                      , mtl
@@ -98,7 +98,7 @@ test-suite instancedM44
   main-is:             TestInstancedM44.hs
   build-depends:       base
                      , gl-pal
-                     , glfw-pal
+                     , sdl-pal
                      , linear-extra
                      , halive
                      , mtl
@@ -114,7 +114,7 @@ test-suite instancedM44Mapped
   main-is:             TestInstancedM44Mapped.hs
   build-depends:       base
                      , gl-pal
-                     , glfw-pal
+                     , sdl-pal
                      , linear-extra
                      , halive
                      , mtl
@@ -131,7 +131,7 @@ test-suite ubo
   main-is:             TestUniformBuffer.hs
   build-depends:       base
                      , gl-pal
-                     , glfw-pal
+                     , sdl-pal
                      , linear-extra
                      , halive
                      , mtl
@@ -146,7 +146,7 @@ test-suite rayobb
   main-is:             TestRayOBB.hs
   build-depends:       base
                      , gl-pal
-                     , glfw-pal
+                     , sdl-pal
                      , linear-extra
                      , halive
                      , mtl

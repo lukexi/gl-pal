@@ -1,5 +1,8 @@
-{-# LANGUAGE RecordWildCards, DeriveDataTypeable, BangPatterns #-}
-import Graphics.UI.GLFW.Pal
+{-# LANGUAGE BangPatterns #-}
+{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE OverloadedStrings #-}
+import SDL.Pal
 import Graphics.GL.Pal
 import Halive.Utils
 import Control.Monad.Reader
@@ -36,7 +39,7 @@ loopM n action = go 0
 
 main :: IO ()
 main = do
-    (win, events) <- reacquire 0 $ createWindow "Geometry Test" 1024 768
+    win <- reacquire 0 $ createGLWindow "Geometry Test"
 
     shader        <- createShaderProgram "test/geoInstancedM44.vert" "test/geoInstancedM44.frag"
 
@@ -59,7 +62,6 @@ main = do
     whileWindow win $ do
         liftIO performMinorGC
 
-        processEvents events $ closeOnEscape win
 
         projection <- getWindowProjection win 45 0.1 1000
         (x,y,w,h)  <- getWindowViewport win
@@ -83,5 +85,5 @@ main = do
             uniformM44 uProjectionView (projection !*! view)
             drawShapeInstanced numInstances
 
-        swapBuffers win
+        glSwapWindow win
 

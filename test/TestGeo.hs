@@ -1,5 +1,7 @@
-{-# LANGUAGE RecordWildCards, DeriveDataTypeable #-}
-import Graphics.UI.GLFW.Pal
+{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE OverloadedStrings #-}
+import SDL.Pal
 import Graphics.GL.Pal
 import Halive.Utils
 import Control.Monad.Reader
@@ -15,7 +17,7 @@ data Uniforms = Uniforms
 
 main :: IO ()
 main = do
-    (win, events) <- reacquire 0 $ createWindow "Geometry Test" 1024 768
+    win <- reacquire 0 $ createGLWindow "Geometry test"
   
     shader        <- createShaderProgram "test/geo.vert" "test/geo.frag"
     Uniforms{..}  <- acquireUniforms shader
@@ -46,13 +48,12 @@ main = do
     -- Wireframe
     --glPolygonMode GL_FRONT_AND_BACK GL_LINE
   
-    whileWindow win $ do
+    whileWindow win $ \events -> do
         projection <- getWindowProjection win 45 0.1 1000
         let view = viewMatrix (V3 0 0 5) (axisAngle (V3 0 1 0) 0)
         (x,y,w,h) <- getWindowViewport win
         glViewport x y w h
         
-        processEvents events $ closeOnEscape win
     
         t <- realToFrac . utctDayTime <$> getCurrentTime
     
@@ -75,7 +76,7 @@ main = do
         withVAO lineVAO $ 
             glDrawArrays GL_LINE_STRIP 0 lineVertCount
     
-        swapBuffers win
+        glSwapWindow win
 
 makeLine :: Program -> IO (VertexArrayObject, ArrayBuffer (V3 GLfloat), GLsizei)
 makeLine shader = do

@@ -1,5 +1,7 @@
-{-# LANGUAGE RecordWildCards, DeriveDataTypeable #-}
-import Graphics.UI.GLFW.Pal
+{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE OverloadedStrings #-}
+import SDL.Pal
 import Graphics.GL.Pal
 import Halive.Utils
 import Control.Monad.Reader
@@ -20,7 +22,7 @@ randomPositions instanceCount t = forM [0..instanceCount-1] $ \i -> do
 
 main :: IO ()
 main = do
-    (win, events) <- reacquire 0 $ createWindow "Geometry Test" 1024 768
+    win <- reacquire 0 $ createGLWindow "Geometry Test"
   
     shader        <- createShaderProgram "test/geoInstanced.vert" "test/geo.frag"
   
@@ -41,8 +43,7 @@ main = do
     glEnable GL_DEPTH_TEST
     glClearColor 0.0 0.0 0.1 1
   
-    whileWindow win $ do
-        processEvents events $ closeOnEscape win
+    whileWindow win $ \events -> do
 
         projection <- getWindowProjection win 45 0.1 1000
         (x,y,w,h)  <- getWindowViewport win
@@ -65,5 +66,5 @@ main = do
             uniformM44 uMVP (projection !*! view !*! model)
             drawShapeInstanced numInstances
     
-        swapBuffers win
+        glSwapWindow win
 

@@ -1,5 +1,8 @@
-{-# LANGUAGE RecordWildCards, DeriveDataTypeable #-}
-import Graphics.UI.GLFW.Pal
+{-# LANGUAGE RecordWildCards #-}
+{-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE OverloadedStrings #-}
+
+import SDL.Pal
 import Graphics.GL.Pal
 import Halive.Utils
 import Control.Monad.Reader
@@ -37,7 +40,7 @@ main = do
 
   glEnable GL_DEPTH_TEST
 
-  whileWindow win $ do
+  whileWindow win $ \events -> do
     proj44 <- getWindowProjection win 45 0.1 1000
     let pose = Pose (V3 0 0 5) (axisAngle (V3 0 1 0) 0)
         view44 = viewMatrixFromPose pose
@@ -46,8 +49,7 @@ main = do
 
     t <- realToFrac . utctDayTime <$> getCurrentTime
 
-    processEvents events $ \e -> do
-      closeOnEscape win e
+    forM_ events $ \e -> do
       onMouseDown e $ \_ -> do
         ray <- cursorPosToWorldRay win proj44 pose
         forM_ (zip ["cube", "sphere", "plane"] shapes) $ \(name, (_shape, pos, aabb)) -> do
@@ -74,7 +76,7 @@ main = do
     withVAO lineVAO $ 
       glDrawArrays GL_LINE_STRIP 0 lineVertCount
 
-    swapBuffers win
+    glSwapWindow win
 
 makeLine :: Program -> IO (VertexArrayObject, ArrayBuffer, GLsizei)
 makeLine shader = do
