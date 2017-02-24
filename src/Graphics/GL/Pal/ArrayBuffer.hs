@@ -5,13 +5,13 @@ import Foreign
 import Graphics.GL
 
 import Graphics.GL.Pal.Types
-import Graphics.GL.Pal.Utility
 import Graphics.GL.Pal.WithActions
 
 import Control.Monad.Trans
 import qualified Data.Vector.Storable.Mutable as V
 import Data.Vector.Storable.Mutable (IOVector)
 import Data.Proxy
+import Baseline
 
 genBuffer :: MonadIO m => m GLuint
 genBuffer = overPtr (glGenBuffers 1)

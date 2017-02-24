@@ -4,7 +4,6 @@
 module Graphics.GL.Pal.Texture where
 
 import Graphics.GL.Pal.Types
-import Graphics.GL.Pal.Utility
 
 import Control.Monad (when)
 import Foreign.Ptr
@@ -15,6 +14,7 @@ import Control.Monad.Trans
 import qualified Codec.Picture as JP
 import qualified Codec.Picture.Types as JP
 import qualified Data.Vector.Storable as SV
+import Baseline
 
 loadTexture :: MonadIO m => FilePath -> ColorSpace -> m TextureID
 loadTexture path colorSpace = liftIO (JP.readImage path) >>= \case

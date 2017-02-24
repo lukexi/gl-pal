@@ -3,10 +3,10 @@ module Graphics.GL.Pal.Framebuffer where
 
 import Graphics.GL
 import Control.Monad.Trans
-import Graphics.GL.Pal.Utility
 import Graphics.GL.Pal.Types
 import Control.Monad
 import Foreign
+import Baseline
 
 bindFramebuffer :: MonadIO m => Framebuffer -> m ()
 bindFramebuffer (Framebuffer framebuffer) = glBindFramebuffer GL_FRAMEBUFFER framebuffer
@@ -48,7 +48,7 @@ createRenderTexture storage sizeX sizeY = do
 
         -- Clear the texture
         glClearColor 0 0 0 0
-        glClear GL_COLOR_BUFFER_BIT    
+        glClear GL_COLOR_BUFFER_BIT
 
     return (framebuffer, TextureID framebufferTextureID)
 
@@ -61,7 +61,7 @@ createFramebuffer sizeX sizeY = do
 
     -- Attach the eye texture as the color buffer
     withFramebuffer framebuffer $ do
-        
+
         glFramebufferTexture2D GL_FRAMEBUFFER GL_COLOR_ATTACHMENT0 GL_TEXTURE_2D framebufferTextureID 0
 
         -- Generate a render buffer for depth

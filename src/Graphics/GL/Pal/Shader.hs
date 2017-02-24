@@ -2,7 +2,6 @@
 module Graphics.GL.Pal.Shader (module Graphics.GL.Pal.Shader, getDir) where
 
 import Graphics.GL.Pal.Types
-import Graphics.GL.Pal.Utility
 
 import Graphics.GL
 import Graphics.GL.Ext.ARB.ShadingLanguageInclude
@@ -18,6 +17,7 @@ import qualified Data.Text.IO as Text
 
 import Data.Text (Text)
 import Data.FileEmbed (getDir)
+import Baseline
 
 useProgram :: MonadIO m => Program -> m ()
 useProgram (Program prog) = glUseProgram (fromIntegral prog)
@@ -242,7 +242,7 @@ buildNamedStrings includes tweak = liftIO $ when gl_ARB_shading_language_include
 -- Registers a directory as containing shaders, and prefixes them with the directory so they're accessible as
 -- e.g. "/resources/mylib.h" (or just <mylib.h>)
 
-addShaderIncludeDir includeDir = 
+addShaderIncludeDir includeDir =
     getDir includeDir >>= \ss -> buildNamedStrings ss (("/"++includeDir++"/")++)
 
 -- | Compile a shader with @#include@ support (if available).
