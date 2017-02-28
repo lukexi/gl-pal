@@ -58,7 +58,6 @@ library
     , time
     , clock
     , file-embed
-    , baseline
   default-language:    Haskell2010
 
 test-suite geo

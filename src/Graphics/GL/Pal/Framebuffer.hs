@@ -6,7 +6,6 @@ import Control.Monad.Trans
 import Graphics.GL.Pal.Types
 import Control.Monad
 import Foreign
-import Baseline
 
 bindFramebuffer :: MonadIO m => Framebuffer -> m ()
 bindFramebuffer (Framebuffer framebuffer) = glBindFramebuffer GL_FRAMEBUFFER framebuffer

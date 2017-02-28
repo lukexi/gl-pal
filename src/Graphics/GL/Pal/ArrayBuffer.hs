@@ -11,7 +11,6 @@ import Control.Monad.Trans
 import qualified Data.Vector.Storable.Mutable as V
 import Data.Vector.Storable.Mutable (IOVector)
 import Data.Proxy
-import Baseline
 
 genBuffer :: MonadIO m => m GLuint
 genBuffer = overPtr (glGenBuffers 1)

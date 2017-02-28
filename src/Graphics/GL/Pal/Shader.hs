@@ -17,7 +17,6 @@ import qualified Data.Text.IO as Text
 
 import Data.Text (Text)
 import Data.FileEmbed (getDir)
-import Baseline
 
 useProgram :: MonadIO m => Program -> m ()
 useProgram (Program prog) = glUseProgram (fromIntegral prog)

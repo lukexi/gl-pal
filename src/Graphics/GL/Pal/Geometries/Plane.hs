@@ -10,7 +10,6 @@ import Graphics.GL.Pal.Geometry
 import Linear       hiding (trace  )
 import Control.Lens hiding (indices)
 import Control.Monad.Trans
-import Baseline
 
 planeData :: V2 GLfloat -> V3 GLfloat -> V3 GLfloat -> V2 Int -> GeometryData
 planeData size normal up subdivisions = GeometryData{..}

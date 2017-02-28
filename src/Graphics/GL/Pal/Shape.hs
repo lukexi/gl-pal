@@ -13,7 +13,6 @@ import Graphics.GL.Pal.AssignAttribute
 import Graphics.GL.Pal.ArrayBuffer
 import Graphics.GL.Pal.Shader
 import Data.Data
-import Baseline
 import Foreign
 
 newVAO :: MonadIO m => m VertexArrayObject

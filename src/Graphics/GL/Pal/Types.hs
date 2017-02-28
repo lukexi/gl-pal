@@ -6,6 +6,8 @@ module Graphics.GL.Pal.Types where
 import Graphics.GL
 import Linear.Extra
 import Data.Data
+import Foreign
+import Control.Monad.Trans
 
 -- | For texture data
 data ColorSpace = SRGB | Linear
@@ -56,6 +58,13 @@ data Shape u = Shape
   , sGeometry  :: !Geometry
   , sVAO       :: !VertexArrayObject
   }
+
+fI :: (Integral a, Num b) => a -> b
+fI = fromIntegral
+
+-- | Utility for extracting a value from a pointer-taking function
+overPtr :: (MonadIO m, Storable a) => (Ptr a -> IO b) -> m a
+overPtr f = liftIO (alloca (\p -> f p >> peek p))
 
 
 
